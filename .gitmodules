@@ -1,6 +1,0 @@
-[submodule "Qemu"]
-	path = Qemu
-	url = git@github.com:milos85vasic/Server-Factory-Qemu-Utils.git
-[submodule "Parallels"]
-	path = Parallels
-	url = git@github.com:milos85vasic/Server-Factory-Parallels-Utils.git
