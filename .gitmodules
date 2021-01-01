@@ -1,0 +1,6 @@
+[submodule "Parallels"]
+	path = Parallels
+	url = https://github.com/Server-Factory/Parallels-Utils.git
+[submodule "Qemu"]
+	path = Qemu
+	url = https://github.com/Server-Factory/Qemu-Utils.git
