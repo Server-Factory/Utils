@@ -1,6 +1,6 @@
-# [Server Factory](https://github.com/milos85vasic/Server-Factory) Utils
+# [Server Factory](https://github.com/Server-Factory/Core-Framework) Utils
 
-Various utils for [Server Factory](https://github.com/milos85vasic/Server-Factory) framework.
+Various utils for [Server Factory](https://github.com/Server-Factory/Core-Framework) framework.
 
 See the [current version](./version.txt) and
 [version code](./version_code.txt).
