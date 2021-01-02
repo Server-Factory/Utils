@@ -8,10 +8,9 @@ if which git; then
     exit 1
   else
 
-    mkdir Factory && cd Factory && \
-    git clone git@github.com:Server-Factory/Mail-Server-Factory.git . && \
-    git submodule init && git submodule update && \
-    ./installer.sh
+    mkdir Factory && cd Factory &&
+      git clone --recurse-submodules git@github.com:Server-Factory/Mail-Server-Factory.git . &&
+      ./installer.sh
   fi
 else
 
