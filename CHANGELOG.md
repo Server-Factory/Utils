@@ -5,7 +5,7 @@ new features that have been introduced.
 
 ## Version 1.0.0 Alpha 4.5
 
-- Tbd.
+- Proxy installation script.
 
 ## Version 1.0.0 Alpha 4.4
 
