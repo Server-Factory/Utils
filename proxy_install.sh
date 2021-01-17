@@ -39,7 +39,30 @@ startProxyScript="$utilsRoot"/"$cmdStartProxy"
 echo """
 #!/bin/sh
 
-echo \"Starting Proxy\"
+echo \"Setting up proxy\"
+
+if [ \"$account\" = \"_empty\" ]; then
+
+  PROXY_URL=\"$host:$port/\"
+else
+
+  if [ \"$account\" = \"_empty\" ]; then
+
+    echo \"ERROR: Password cannot be empty\"
+    exit 1
+  fi
+  PROXY_URL=\"$account:$password@$host:$port/\"
+fi
+
+export http_proxy=\"$PROXY_URL\"
+export https_proxy=\"$PROXY_URL\"
+export ftp_proxy=\"$PROXY_URL\"
+export no_proxy=\"127.0.0.1,localhost\"
+
+export HTTP_PROXY=\"$PROXY_URL\"
+export HTTPS_PROXY=\"$PROXY_URL\"
+export FTP_PROXY=\"$PROXY_URL\"
+export NO_PROXY=\"127.0.0.1,localhost\"
 """ >"$startProxyScript"
 etc_profile="/etc/profile"
 profile=$(cat "$etc_profile")
@@ -61,6 +84,8 @@ else
 
   echo "'start proxy' script is already installed"
 fi
+
+sh "$startProxyScript"
 
 echo "WORK IN PROGRESS"
 exit 1
