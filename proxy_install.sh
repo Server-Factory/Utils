@@ -49,6 +49,8 @@ else
   PROXY_URL=\"$account:$password@$host:$port/\"
 fi
 
+echo \"Proxy URl is set to: $PROXY_URL\"
+
 export http_proxy=\"$PROXY_URL\"
 export https_proxy=\"$PROXY_URL\"
 export ftp_proxy=\"$PROXY_URL\"
