@@ -41,10 +41,8 @@ echo """
 
 echo \"Setting up proxy\"
 
-if [ \"$account\" = \"_empty\" ]; then
-
-  PROXY_URL=\"$host:$port/\"
-else
+PROXY_URL=\"$host:$port/\"
+if ! [ \"$account\" = \"_empty\" ]; then
 
   PROXY_URL=\"$account:$password@$host:$port/\"
 fi
