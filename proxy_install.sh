@@ -31,3 +31,6 @@ else
 
   echo "'Insecure' setting for Curl is not needed"
 fi
+
+echo "WORK IN PROGRESS"
+exit 1
