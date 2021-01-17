@@ -5,9 +5,11 @@ port="$2"
 account="$3"
 password="$4"
 isSelfSignedCA="$5"
+utilsRoot="$6"
 
 echo "Initializing Proxy"
-echo "Parameters(host=$host, port=$port, account=$account, password=$password, isSelfSignedCA=$isSelfSignedCA)"
+echo "Parameters(1)(host=$host, port=$port, account=$account, password=$password)"
+echo "Parameters(2)(isSelfSignedCA=$isSelfSignedCA, utilsRoot=$utilsRoot)"
 
 if [ -n "$isSelfSignedCA" ]; then
 
