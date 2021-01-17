@@ -14,7 +14,7 @@ echo "Parameters(2)(isSelfSignedCA=$isSelfSignedCA, utilsRoot=$utilsRoot)"
 if [ -n "$isSelfSignedCA" ]; then
 
   source=$(cat /root/.curlrc)
-  if ! echo "$source" | grep -i "insecure"; then
+  if ! echo "$source" | grep -i "insecure" >/dev/null 2>&1; then
 
     echo "Enabling 'Insecure' setting for Curl"
     if echo insecure >>~/.curlrc; then
@@ -43,7 +43,7 @@ echo \"Starting Proxy\"
 """ >"$startProxyScript"
 etc_profile="/etc/profile"
 profile=$(cat "$etc_profile")
-if ! echo "$profile" | grep -i "$startProxyScript"; then
+if ! echo "$profile" | grep -i "$startProxyScript" >/dev/null 2>&1; then
 
   echo "Installing 'start proxy' script"
   if echo """
