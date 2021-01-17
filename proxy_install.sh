@@ -48,7 +48,7 @@ if ! echo "$profile" | grep -i "$startProxyScript" >/dev/null 2>&1; then
   echo "Installing 'start proxy' script"
   if echo """
 
-  sh $startProxyScript
+sh $startProxyScript
   """ >>"$etc_profile"; then
 
     echo "'start proxy' script has been installed"
