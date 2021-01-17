@@ -34,5 +34,33 @@ else
   echo "'Insecure' setting for Curl is not needed"
 fi
 
+cmdStartProxy="start_proxy.sh"
+startProxyScript="$utilsRoot"/"$cmdStartProxy"
+echo """
+#!/bin/sh
+
+echo \"Starting Proxy\"
+""" >"$startProxyScript"
+etc_profile="/etc/profile"
+profile=$(cat "$etc_profile")
+if ! echo "$profile" | grep -i "$startProxyScript"; then
+
+  echo "Installing 'start proxy' script"
+  if echo """
+
+  sh $startProxyScript
+  """ >>"$etc_profile"; then
+
+    echo "'start proxy' script has been installed"
+  else
+
+    echo "ERROR: 'start proxy' script has not been installed"
+    exit 1
+  fi
+else
+
+  echo "'start proxy' script is already installed"
+fi
+
 echo "WORK IN PROGRESS"
 exit 1
