@@ -46,11 +46,6 @@ if [ \"$account\" = \"_empty\" ]; then
   PROXY_URL=\"$host:$port/\"
 else
 
-  if [ \"$account\" = \"_empty\" ]; then
-
-    echo \"ERROR: Password cannot be empty\"
-    exit 1
-  fi
   PROXY_URL=\"$account:$password@$host:$port/\"
 fi
 
