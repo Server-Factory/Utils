@@ -79,7 +79,7 @@ if ! echo "$profile" | grep -i "$startProxyScript" >/dev/null 2>&1; then
   echo "Installing 'start proxy' script"
   if echo """
 
-sh $startProxyScript
+source $startProxyScript
   """ >>"$etc_profile"; then
 
     echo "'start proxy' script has been installed"
@@ -93,7 +93,8 @@ else
   echo "'start proxy' script is already installed"
 fi
 
-sh "$startProxyScript"
+# shellcheck disable=SC2039,SC1090
+source "$startProxyScript"
 
 echo "WORK IN PROGRESS"
 exit 1
