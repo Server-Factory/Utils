@@ -39,24 +39,29 @@ startProxyScript="$utilsRoot"/"$cmdStartProxy"
 echo """
 #!/bin/sh
 
+host=\"$host\"
+port=\"$port\"
+account=\"$account\"
+password=\"$password\"
+
 echo \"Setting up proxy\"
 
-PROXY_URL=\"$host:$port/\"
-if ! [ \"$account\" = \"_empty\" ]; then
+PROXY_URL=\"\$host:\$port/\"
+if ! [ \"\$account\" = \"_empty\" ]; then
 
-  PROXY_URL=\"$account:$password@$host:$port/\"
+  PROXY_URL=\"\$account:\$password@\$host:\$port/\"
 fi
 
-echo \"Proxy URL is set to: $PROXY_URL\"
+echo \"Proxy URL is set to: \$PROXY_URL\"
 
-export http_proxy=\"$PROXY_URL\"
-export https_proxy=\"$PROXY_URL\"
-export ftp_proxy=\"$PROXY_URL\"
+export http_proxy=\"\$PROXY_URL\"
+export https_proxy=\"\$PROXY_URL\"
+export ftp_proxy=\"\$PROXY_URL\"
 export no_proxy=\"127.0.0.1,localhost\"
 
-export HTTP_PROXY=\"$PROXY_URL\"
-export HTTPS_PROXY=\"$PROXY_URL\"
-export FTP_PROXY=\"$PROXY_URL\"
+export HTTP_PROXY=\"\$PROXY_URL\"
+export HTTPS_PROXY=\"\$PROXY_URL\"
+export FTP_PROXY=\"\$PROXY_URL\"
 export NO_PROXY=\"127.0.0.1,localhost\"
 """ >"$startProxyScript"
 etc_profile="/etc/profile"
