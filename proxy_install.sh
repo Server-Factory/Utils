@@ -36,7 +36,7 @@ fi
 
 cmdStartProxy="setup_proxy.sh"
 startProxyScript="$scriptRoot"/"$cmdStartProxy"
-echo """
+if echo """
 #!/bin/sh
 
 host=\"$host\"
@@ -63,7 +63,15 @@ export HTTP_PROXY=\"\$PROXY_URL\"
 export HTTPS_PROXY=\"\$PROXY_URL\"
 export FTP_PROXY=\"\$PROXY_URL\"
 export NO_PROXY=\"127.0.0.1,localhost\"
-""" >"$startProxyScript"
+""" >"$startProxyScript" && chmod 740 "$startProxyScript"; then
+
+  echo "$startProxyScript has been created"
+else
+
+  echo "ERROR: $startProxyScript has not been created"
+  exit 1
+fi
+
 etc_profile="/etc/profile"
 profile=$(cat "$etc_profile")
 if ! echo "$profile" | grep -i "$startProxyScript" >/dev/null 2>&1; then
