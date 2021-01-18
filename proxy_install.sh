@@ -5,11 +5,11 @@ port="$2"
 account="$3"
 password="$4"
 isSelfSignedCA="$5"
-utilsRoot="$6"
+scriptRoot="$6"
 
 echo "Initializing Proxy"
 echo "Parameters(1)(host=$host, port=$port, account=$account, password=$password)"
-echo "Parameters(2)(isSelfSignedCA=$isSelfSignedCA, utilsRoot=$utilsRoot)"
+echo "Parameters(2)(isSelfSignedCA=$isSelfSignedCA, scriptRoot=$scriptRoot)"
 
 if [ -n "$isSelfSignedCA" ]; then
 
@@ -34,8 +34,8 @@ else
   echo "'Insecure' setting for Curl is not needed"
 fi
 
-cmdStartProxy="start_proxy.sh"
-startProxyScript="$utilsRoot"/"$cmdStartProxy"
+cmdStartProxy="setup_proxy.sh"
+startProxyScript="$scriptRoot"/"$cmdStartProxy"
 echo """
 #!/bin/sh
 
