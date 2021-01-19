@@ -13,11 +13,16 @@ echo "Parameters(2)(isSelfSignedCA=$isSelfSignedCA, scriptRoot=$scriptRoot)"
 
 if [ -n "$isSelfSignedCA" ]; then
 
-  source=$(cat /root/.curlrc)
-  if ! echo "$source" | grep -i "insecure" >/dev/null 2>&1; then
+  wget_rc="/etc/wgetrc"
+  curl_rc="/root/.curlrc"
+  curl_rc_disable_ca_check="insecure"
+  wget_rc_disable_ca_check="check_certificate = off"
+
+  source=$(cat "$curl_rc")
+  if ! echo "$source" | grep -i "$curl_rc_disable_ca_check" >/dev/null 2>&1; then
 
     echo "Enabling 'Insecure' setting for Curl"
-    if echo insecure >>~/.curlrc; then
+    if echo "$curl_rc_disable_ca_check" >>"$curl_rc"; then
 
       echo "Enabled 'Insecure' setting for Curl"
     else
@@ -29,9 +34,26 @@ if [ -n "$isSelfSignedCA" ]; then
 
     echo "'Insecure' setting for Curl is already set"
   fi
+
+  source=$(cat "$wget_rc")
+  if ! echo "$source" | grep -i "$wget_rc_disable_ca_check" >/dev/null 2>&1; then
+
+    echo "Enabling 'Insecure' setting for Wget"
+    if echo "$wget_rc_disable_ca_check" >>"$wget_rc"; then
+
+      echo "Enabled 'Insecure' setting for Wget"
+    else
+
+      echo "ERROR: could not enable 'Insecure' setting for Wget"
+      exit 1
+    fi
+  else
+
+    echo "'Insecure' setting for Wget is already set"
+  fi
 else
 
-  echo "'Insecure' setting for Curl is not needed"
+  echo "'Insecure' setting for Curl and Wget is not needed"
 fi
 
 cmdStartProxy="setup_proxy.sh"
