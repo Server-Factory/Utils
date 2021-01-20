@@ -156,3 +156,5 @@ source "$startProxyScript"
 
 echo "WORK IN PROGRESS"
 exit 1
+
+# TODO: In each iteration obtain proxy certificate (if self-signed) and apply it as trusted
