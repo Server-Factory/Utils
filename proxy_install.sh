@@ -27,6 +27,7 @@ if test -e "$get_ip_script"; then
     if echo "$proxy_ip" | awk '/^([0-9]{1,3}[.]){3}([0-9]{1,3})$/{print $1}' >/dev/null 2>&1; then
 
       echo "Proxy IP (2): $proxy_ip"
+      host="$proxy_ip"
     else
 
       echo "ERROR: Could not obtain proxy IP address (2)"
