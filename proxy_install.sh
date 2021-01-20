@@ -6,10 +6,42 @@ account="$3"
 password="$4"
 isSelfSignedCA="$5"
 scriptRoot="$6"
+here=$(dirname "$0")
 
 echo "Initializing Proxy"
 echo "Parameters(1)(host=$host, port=$port, account=$account, password=$password)"
 echo "Parameters(2)(isSelfSignedCA=$isSelfSignedCA, scriptRoot=$scriptRoot)"
+
+get_ip_script="$here"/getip.sh
+if test -e "$get_ip_script"; then
+
+  if sh "$get_ip_script" "$host" >/dev/null 2>&1; then
+
+    proxy_ip=$(sh "$get_ip_script" "$host")
+    echo "Proxy IP (1): $proxy_ip"
+    if [ "$proxy_ip" = "" ]; then
+
+      echo "ERROR: Could not obtain proxy IP address (1)"
+      exit 1
+    fi
+    if echo "$proxy_ip" | awk '/^([0-9]{1,3}[.]){3}([0-9]{1,3})$/{print $1}' >/dev/null 2>&1; then
+
+      echo "Proxy IP (2): $proxy_ip"
+    else
+
+      echo "ERROR: Could not obtain proxy IP address (2)"
+      exit 1
+    fi
+  else
+
+    echo "ERROR: Could not obtain proxy IP address (3)"
+    exit 1
+  fi
+else
+
+  echo "ERROR: $get_ip_script is unavailable"
+  exit 1
+fi
 
 if [ -n "$isSelfSignedCA" ]; then
 
@@ -117,6 +149,8 @@ fi
 
 # shellcheck disable=SC2039,SC1090
 source "$startProxyScript"
+# TODO:
+# sleep 900; sh proxy_install.sh &
 
 echo "WORK IN PROGRESS"
 exit 1
