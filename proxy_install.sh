@@ -12,6 +12,7 @@ echo "Initializing Proxy"
 echo "Parameters(1)(host=$host, port=$port, account=$account, password=$password)"
 echo "Parameters(2)(isSelfSignedCA=$isSelfSignedCA, scriptRoot=$scriptRoot)"
 
+# TODO: Reuse ip address from variable as backup if obtain ip cmd fails
 get_ip_script="$here"/getip.sh
 if test -e "$get_ip_script"; then
 
