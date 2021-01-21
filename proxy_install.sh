@@ -12,18 +12,35 @@ echo "Initializing Proxy"
 echo "Parameters(1)(host=$host, port=$port, account=$account, password=$password)"
 echo "Parameters(2)(isSelfSignedCA=$isSelfSignedCA, scriptRoot=$scriptRoot)"
 
-# TODO: Reuse ip address from variable as backup if obtain ip cmd fails
+# shellcheck disable=SC2154
+if ! [ "$proxy_host_ip" = "" ]
+then
+
+  echo "Last known proxy IP: $proxy_host_ip"
+fi
+
 get_ip_script="$here"/getip.sh
 if test -e "$get_ip_script"; then
 
   if sh "$get_ip_script" "$host" >/dev/null 2>&1; then
 
     proxy_ip=$(sh "$get_ip_script" "$host")
-    echo "Proxy IP (1): $proxy_ip"
     if [ "$proxy_ip" = "" ]; then
 
-      echo "ERROR: Could not obtain proxy IP address (1)"
-      exit 1
+      echo "ERROR: proxy IP was not obtained successfully"
+      if [ "$proxy_host_ip" = "" ]; then
+
+        echo "ERROR: Could not obtain proxy IP address (1)"
+        exit 1
+      else
+
+        proxy_ip="$proxy_host_ip"
+        host="$proxy_ip"
+        echo "Proxy IP (1B): $host"
+      fi
+    else
+
+      echo "Proxy IP (1): $proxy_ip"
     fi
     if echo "$proxy_ip" | awk '/^([0-9]{1,3}[.]){3}([0-9]{1,3})$/{print $1}' >/dev/null 2>&1; then
 
@@ -31,13 +48,27 @@ if test -e "$get_ip_script"; then
       host="$proxy_ip"
     else
 
-      echo "ERROR: Could not obtain proxy IP address (2)"
-      exit 1
+      if [ "$proxy_host_ip" = "" ]; then
+
+        echo "ERROR: Could not obtain proxy IP address (2)"
+        exit 1
+      else
+
+        host="$proxy_host_ip"
+        echo "Proxy IP (2B): $host"
+      fi
     fi
   else
 
-    echo "ERROR: Could not obtain proxy IP address (3)"
-    exit 1
+    if [ "$proxy_host_ip" = "" ]; then
+
+      echo "ERROR: Could not obtain proxy IP address (3)"
+      exit 1
+    else
+
+      host="$proxy_host_ip"
+      echo "Proxy IP (3B): $host"
+    fi
   fi
 else
 
@@ -102,12 +133,15 @@ password=\"$password\"
 
 echo \"Setting up proxy\"
 
+export proxy_host_ip=\"$proxy_ip\"
 export proxy_url=\"\$host:\$port/\"
+
 if ! [ \"\$account\" = \"_empty\" ]; then
 
   proxy_url=\"\$account:\$password@\$host:\$port/\"
 fi
 
+echo \"Proxy IP is set to: \$proxy_host_ip\"
 echo \"Proxy URL is set to: \$proxy_url\"
 
 export http_proxy=\"\$proxy_url\"
