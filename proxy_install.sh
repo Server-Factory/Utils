@@ -4,13 +4,15 @@ host="$1"
 port="$2"
 account="$3"
 password="$4"
-isSelfSignedCA="$5"
-scriptRoot="$6"
+is_selfSigned_ca="$5"
+script_root="$6"
+certificate_endpoint="$7"
 here=$(dirname "$0")
 
 echo "Initializing Proxy"
 echo "Parameters(1)(host=$host, port=$port, account=$account, password=$password)"
-echo "Parameters(2)(isSelfSignedCA=$isSelfSignedCA, scriptRoot=$scriptRoot)"
+echo "Parameters(2)(is_selfSigned_ca=$is_selfSigned_ca, script_root=$script_root)"
+echo "Parameters(3)(certificate_endpoint=$certificate_endpoint)"
 
 # shellcheck disable=SC2154
 if ! [ "$proxy_host_ip" = "" ]
@@ -76,7 +78,7 @@ else
   exit 1
 fi
 
-if [ -n "$isSelfSignedCA" ]; then
+if [ -n "$is_selfSigned_ca" ]; then
 
   wget_rc="/etc/wgetrc"
   curl_rc="/root/.curlrc"
@@ -122,7 +124,7 @@ else
 fi
 
 cmdStartProxy="setup_proxy.sh"
-startProxyScript="$scriptRoot"/"$cmdStartProxy"
+startProxyScript="$script_root"/"$cmdStartProxy"
 if echo """
 #!/bin/sh
 
