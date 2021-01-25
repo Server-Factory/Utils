@@ -10,9 +10,9 @@ certificate_endpoint="$7"
 here=$(dirname "$0")
 
 echo "Initializing Proxy"
-echo "Parameters(1)(host=$host, port=$port, account=$account, password=$password)"
-echo "Parameters(2)(is_selfSigned_ca=$is_selfSigned_ca, script_root=$script_root)"
-echo "Parameters(3)(certificate_endpoint=$certificate_endpoint)"
+echo "Proxy init. parameters (1): (host=$host, port=$port, account=$account, password=$password)"
+echo "Proxy init. parameters (2): (is_selfSigned_ca=$is_selfSigned_ca, script_root=$script_root)"
+echo "Proxy init. parameters (3): (certificate_endpoint=$certificate_endpoint)"
 
 # shellcheck disable=SC2154
 if ! [ "$proxy_host_ip" = "" ]
