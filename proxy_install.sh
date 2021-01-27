@@ -16,8 +16,7 @@ echo "Proxy init. parameters (2): (is_selfSigned_ca=$is_selfSigned_ca, script_ro
 echo "Proxy init. parameters (3): (certificate_endpoint=$certificate_endpoint)"
 
 # shellcheck disable=SC2154
-if ! [ "$proxy_host_ip" = "" ]
-then
+if ! [ "$proxy_host_ip" = "" ]; then
 
   echo "Last known proxy IP: $proxy_host_ip"
 fi
@@ -83,46 +82,86 @@ if ! [ "$certificate_endpoint" = "$empty" ]; then
 
   if [ -f /etc/os-release ]; then
 
-      # freedesktop.org and systemd
-      . /etc/os-release
-      os=$NAME
-      ver=$VERSION_ID
+    # freedesktop.org and systemd
+    . /etc/os-release
+    os=$NAME
+    ver=$VERSION_ID
   elif type lsb_release >/dev/null 2>&1; then
 
-      # linuxbase.org
-      os=$(lsb_release -si)
-      ver=$(lsb_release -sr)
+    # linuxbase.org
+    os=$(lsb_release -si)
+    ver=$(lsb_release -sr)
   elif [ -f /etc/lsb-release ]; then
 
-      # For some versions of Debian/Ubuntu without lsb_release command
-      . /etc/lsb-release
-      os=$DISTRIB_ID
-      ver=$DISTRIB_RELEASE
+    # For some versions of Debian/Ubuntu without lsb_release command
+    . /etc/lsb-release
+    os=$DISTRIB_ID
+    ver=$DISTRIB_RELEASE
   elif [ -f /etc/debian_version ]; then
 
-      # Older Debian/Ubuntu/etc.
-      os=Debian
-      ver=$(cat /etc/debian_version)
+    # Older Debian/Ubuntu/etc.
+    os=Debian
+    ver=$(cat /etc/debian_version)
   elif [ -f /etc/SuSe-release ]; then
 
-      # Older SuSE/etc.
-      echo "Unsupported operating system (1)"
-      exit 1
+    # Older SuSE/etc.
+    echo "Unsupported operating system (1)"
+    exit 1
   elif [ -f /etc/redhat-release ]; then
 
-      # Older Red Hat, CentOS, etc.
-      echo "Unsupported operating system (2)"
-      exit 1
+    # Older Red Hat, CentOS, etc.
+    echo "Unsupported operating system (2)"
+    exit 1
   else
 
-      # Fall back to uname, e.g. "Linux <version>", also works for BSD, etc.
-      os=$(uname -s)
-      ver=$(uname -r)
+    # Fall back to uname, e.g. "Linux <version>", also works for BSD, etc.
+    os=$(uname -s)
+    ver=$(uname -r)
   fi
 
   echo "Obtaining Proxy certificate from: $certificate_endpoint"
   echo "Target operating system is: $os $ver"
 
+  certificate_home="/usr/local/share/ca-certificates"
+  if echo "$os" | grep -e -i "Fedora" -e -i "Centos" -e -i "RedHat" >/dev/null 2>&1; then
+
+    certificate_home="/etc/pki/ca-trust/source/anchors"
+  fi
+
+  certificate_file="$certificate_home/$host.crt"
+  if test -e "$certificate_file"; then
+
+    if ! rm -f "$certificate_file"; then
+
+      echo "ERROR: $certificate_file could not be removed"
+      exit 1
+    fi
+  fi
+
+  if wget -P "$certificate_file" "$certificate_endpoint"; then
+
+    echo "Proxy certificate saved to: $certificate_file"
+  else
+
+    echo "ERROR: Could not save proxy certificate to: $certificate_file"
+    exit 1
+  fi
+
+  if echo "$os" | grep -e -i "Fedora" -e -i "Centos" -e -i "RedHat" >/dev/null 2>&1; then
+
+    if ! update-ca-trust extract; then
+
+      echo "Could not update CA trust (1)"
+      exit 1
+    fi
+  else
+
+    if ! update-ca-certificates; then
+
+      echo "Could not update CA trust (2)"
+      exit 1
+    fi
+  fi
 fi
 
 if [ -n "$is_selfSigned_ca" ]; then
