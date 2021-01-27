@@ -135,7 +135,10 @@ if ! [ "$certificate_endpoint" = "$empty" ]; then
   certificate_file="$certificate_home/$certificate_file_name"
   if test -e "$certificate_file"; then
 
-    if ! rm -f "$certificate_file"; then
+    if rm -f "$certificate_file"; then
+
+      echo "Old $certificate_file has been removed"
+    else
 
       echo "ERROR: $certificate_file could not be removed"
       exit 1
