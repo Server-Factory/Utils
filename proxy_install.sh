@@ -16,6 +16,7 @@ echo "Proxy init. parameters (2): (is_selfSigned_ca=$is_selfSigned_ca, script_ro
 echo "Proxy init. parameters (3): (certificate_endpoint=$certificate_endpoint)"
 
 # FIXME: Handle properly when host is ip address already
+# FIXME: After certificate is obtained from remote endpoint, if we run the script again, it will try to obtain it vi Proxy!
 
 # shellcheck disable=SC2154
 if ! [ "$proxy_host_ip" = "" ]; then
