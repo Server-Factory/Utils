@@ -142,7 +142,7 @@ if ! [ "$certificate_endpoint" = "$empty" ]; then
   fi
 
   # FIXME: Resolve certificate endpoint into IP address if required
-  if wget -P "$certificate_home" -O "$certificate_file_name" "$certificate_endpoint" >/dev/null 2>&1; then
+  if wget -O "$certificate_file" "$certificate_endpoint" >/dev/null 2>&1; then
 
     echo "Proxy certificate saved to: $certificate_file"
   else
