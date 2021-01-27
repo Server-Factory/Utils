@@ -15,6 +15,8 @@ echo "Proxy init. parameters (1): (host=$host, port=$port, account=$account, pas
 echo "Proxy init. parameters (2): (is_selfSigned_ca=$is_selfSigned_ca, script_root=$script_root)"
 echo "Proxy init. parameters (3): (certificate_endpoint=$certificate_endpoint)"
 
+# FIXME: Handle properly when host is ip address already
+
 # shellcheck disable=SC2154
 if ! [ "$proxy_host_ip" = "" ]; then
 
@@ -123,12 +125,13 @@ if ! [ "$certificate_endpoint" = "$empty" ]; then
   echo "Obtaining proxy certificate from: $certificate_endpoint"
 
   certificate_home="/usr/local/share/ca-certificates"
-  if echo "$os" | grep -e -i "Fedora" -e -i "Centos" -e -i "RedHat" >/dev/null 2>&1; then
+  if echo "$os" | grep -i -E "Fedora|Centos|RedHat" >/dev/null 2>&1; then
 
     certificate_home="/etc/pki/ca-trust/source/anchors"
   fi
 
-  certificate_file="$certificate_home/$host.crt"
+  certificate_file_name="$host.crt"
+  certificate_file="$certificate_home/$certificate_file_name"
   if test -e "$certificate_file"; then
 
     if ! rm -f "$certificate_file"; then
@@ -138,7 +141,8 @@ if ! [ "$certificate_endpoint" = "$empty" ]; then
     fi
   fi
 
-  if wget -P "$certificate_file" "$certificate_endpoint"; then
+  # FIXME: Resolve certificate endpoint into IP address if required
+  if wget -P "$certificate_home" -O "$certificate_file_name" "$certificate_endpoint" >/dev/null 2>&1; then
 
     echo "Proxy certificate saved to: $certificate_file"
   else
@@ -147,16 +151,16 @@ if ! [ "$certificate_endpoint" = "$empty" ]; then
     exit 1
   fi
 
-  if echo "$os" | grep -e -i "Fedora" -e -i "Centos" -e -i "RedHat" >/dev/null 2>&1; then
+  if echo "$os" | grep -i -E "Fedora|Centos|RedHat" >/dev/null 2>&1; then
 
-    if ! update-ca-trust extract; then
+    if ! update-ca-trust extract >/dev/null 2>&1; then
 
       echo "Could not update CA trust (1)"
       exit 1
     fi
   else
 
-    if ! update-ca-certificates; then
+    if ! update-ca-certificates >/dev/null 2>&1; then
 
       echo "Could not update CA trust (2)"
       exit 1
