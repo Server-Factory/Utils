@@ -16,7 +16,6 @@ echo "Proxy init. parameters (2): (is_selfSigned_ca=$is_selfSigned_ca, script_ro
 echo "Proxy init. parameters (3): (certificate_endpoint=$certificate_endpoint)"
 
 # FIXME: Handle properly when host is ip address already
-# FIXME: After certificate is obtained from remote endpoint, if we run the script again, it will try to obtain it vi Proxy!
 
 # shellcheck disable=SC2154
 if ! [ "$proxy_host_ip" = "" ]; then
@@ -47,7 +46,15 @@ if test -e "$get_ip_script"; then
 
       echo "Proxy IP (1): $proxy_ip"
     fi
-    if echo "$proxy_ip" | awk '/^([0-9]{1,3}[.]){3}([0-9]{1,3})$/{print $1}' >/dev/null 2>&1; then
+
+    validate_Script="$here/validate_ip_address.sh"
+    if ! test -e "$validate_Script"; then
+
+      echo "ERROR: $validate_Script does not exist"
+      exit 1
+    fi
+
+    if sh "$validate_Script" "$proxy_ip" >/dev/null 2>&1; then
 
       echo "Proxy IP (2): $proxy_ip"
       host="$proxy_ip"
@@ -146,7 +153,7 @@ if ! [ "$certificate_endpoint" = "$empty" ]; then
   fi
 
   # FIXME: Resolve certificate endpoint into IP address if required
-  if wget -O "$certificate_file" "$certificate_endpoint" >/dev/null 2>&1; then
+  if wget --proxy off -O "$certificate_file" "$certificate_endpoint" >/dev/null 2>&1; then
 
     echo "Proxy certificate saved to: $certificate_file"
   else
