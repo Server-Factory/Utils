@@ -16,6 +16,13 @@ echo "Proxy init. parameters (1): (host=$host, port=$port, account=$account, pas
 echo "Proxy init. parameters (2): (is_selfSigned_ca=$is_selfSigned_ca, script_root=$script_root)"
 echo "Proxy init. parameters (3): (certificate_endpoint=$certificate_endpoint)"
 
+validate_ip_script="$here/validate_ip_address.sh"
+if ! test -e "$validate_ip_script"; then
+
+  echo "ERROR: $validate_ip_script does not exist"
+  exit 1
+fi
+
 # FIXME: Handle properly when host is ip address already
 
 # shellcheck disable=SC2154
@@ -48,14 +55,7 @@ if test -e "$get_ip_script"; then
       echo "Proxy IP (1): $proxy_ip"
     fi
 
-    validate_Script="$here/validate_ip_address.sh"
-    if ! test -e "$validate_Script"; then
-
-      echo "ERROR: $validate_Script does not exist"
-      exit 1
-    fi
-
-    if sh "$validate_Script" "$proxy_ip" >/dev/null 2>&1; then
+    if sh "$validate_ip_script" "$proxy_ip" >/dev/null 2>&1; then
 
       echo "Proxy IP (2): $proxy_ip"
       host="$proxy_ip"
