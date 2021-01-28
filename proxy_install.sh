@@ -153,9 +153,18 @@ if ! [ "$certificate_endpoint" = "$empty" ]; then
     fi
   fi
 
-  echo "> > > > $host_name"
-  echo "> > > > $proxy_ip"
-  # FIXME: Resolve certificate endpoint into IP address if required
+  if ! [ "$host_name" = "$proxy_ip" ]; then
+
+    if certificate_endpoint=$(echo "$certificate_endpoint" | sed "s/$host_name/$proxy_ip/1"); then
+
+      echo "Proxy certificate endpoint has been updated to: $certificate_endpoint"
+    else
+
+      echo "ERROR: could not update proxy certificate endpoint: '$host_name' -> '$proxy_ip'"
+      exit 1
+    fi
+  fi
+
   if wget --proxy off -O "$certificate_file" "$certificate_endpoint" >/dev/null 2>&1; then
 
     echo "Proxy certificate saved to: $certificate_file"
@@ -306,4 +315,3 @@ fi
 
 echo "WORK IN PROGRESS"
 exit 1
-
