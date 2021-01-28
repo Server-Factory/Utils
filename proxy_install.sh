@@ -165,7 +165,7 @@ if ! [ "$certificate_endpoint" = "$empty" ]; then
     fi
   fi
 
-  if wget --proxy off -O "$certificate_file" "$certificate_endpoint" >/dev/null 2>&1; then
+  if wget --no-proxy -O "$certificate_file" "$certificate_endpoint" >/dev/null 2>&1; then
 
     echo "Proxy certificate saved to: $certificate_file"
   else
