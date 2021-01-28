@@ -1,6 +1,7 @@
 #!/bin/sh
 
 host="$1"
+host_name="$host"
 port="$2"
 account="$3"
 password="$4"
@@ -152,6 +153,8 @@ if ! [ "$certificate_endpoint" = "$empty" ]; then
     fi
   fi
 
+  echo "> > > > $host_name"
+  echo "> > > > $proxy_ip"
   # FIXME: Resolve certificate endpoint into IP address if required
   if wget --proxy off -O "$certificate_file" "$certificate_endpoint" >/dev/null 2>&1; then
 
