@@ -248,72 +248,70 @@ else
   echo "'Insecure' certificate settings are not needed (2)"
 fi
 
-# TODO: Uncomment
-#cmdStartProxy="setup_proxy.sh"
-#startProxyScript="$script_root"/"$cmdStartProxy"
-#if echo """
-##!/bin/sh
-#
-#host=\"$host\"
-#port=\"$port\"
-#account=\"$account\"
-#password=\"$password\"
-#
-#echo \"Setting up proxy\"
-#
-#export proxy_host_ip=\"$proxy_ip\"
-#export proxy_url=\"\$host:\$port/\"
-#
-#if ! [ \"\$account\" = \"_empty\" ]; then
-#
-#  proxy_url=\"\$account:\$password@\$host:\$port/\"
-#fi
-#
-#echo \"Proxy IP is set to: \$proxy_host_ip\"
-#echo \"Proxy URL is set to: \$proxy_url\"
-#
-#export http_proxy=\"\$proxy_url\"
-#export https_proxy=\"\$proxy_url\"
-#export ftp_proxy=\"\$proxy_url\"
-#export no_proxy=\"127.0.0.1,localhost\"
-#
-#export HTTP_PROXY=\"\$proxy_url\"
-#export HTTPS_PROXY=\"\$proxy_url\"
-#export FTP_PROXY=\"\$proxy_url\"
-#export NO_PROXY=\"127.0.0.1,localhost\"
-#""" >"$startProxyScript" && chmod 740 "$startProxyScript"; then
-#
-#  echo "$startProxyScript has been created"
-#else
-#
-#  echo "ERROR: $startProxyScript has not been created"
-#  exit 1
-#fi
-#
-#etc_profile="/etc/profile"
-#profile=$(cat "$etc_profile")
-#if ! echo "$profile" | grep -i "$startProxyScript" >/dev/null 2>&1; then
-#
-#  echo "Installing 'start proxy' script"
-#  if echo """
-#
-#source $startProxyScript
-#  """ >>"$etc_profile"; then
-#
-#    echo "'start proxy' script has been installed"
-#  else
-#
-#    echo "ERROR: 'start proxy' script has not been installed"
-#    exit 1
-#  fi
-#else
-#
-#  echo "'start proxy' script is already installed"
-#fi
+cmdStartProxy="setup_proxy.sh"
+startProxyScript="$script_root"/"$cmdStartProxy"
+if echo """
+#!/bin/sh
+
+host=\"$host\"
+port=\"$port\"
+account=\"$account\"
+password=\"$password\"
+
+echo \"Setting up proxy\"
+
+export proxy_host_ip=\"$proxy_ip\"
+export proxy_url=\"\$host:\$port/\"
+
+if ! [ \"\$account\" = \"_empty\" ]; then
+
+  proxy_url=\"\$account:\$password@\$host:\$port/\"
+fi
+
+echo \"Proxy IP is set to: \$proxy_host_ip\"
+echo \"Proxy URL is set to: \$proxy_url\"
+
+export http_proxy=\"\$proxy_url\"
+export https_proxy=\"\$proxy_url\"
+export ftp_proxy=\"\$proxy_url\"
+export no_proxy=\"127.0.0.1,localhost\"
+
+export HTTP_PROXY=\"\$proxy_url\"
+export HTTPS_PROXY=\"\$proxy_url\"
+export FTP_PROXY=\"\$proxy_url\"
+export NO_PROXY=\"127.0.0.1,localhost\"
+""" >"$startProxyScript" && chmod 740 "$startProxyScript"; then
+
+  echo "$startProxyScript has been created"
+else
+
+  echo "ERROR: $startProxyScript has not been created"
+  exit 1
+fi
+
+etc_profile="/etc/profile"
+profile=$(cat "$etc_profile")
+if ! echo "$profile" | grep -i "$startProxyScript" >/dev/null 2>&1; then
+
+  echo "Installing 'start proxy' script"
+  if echo """
+
+source $startProxyScript
+  """ >>"$etc_profile"; then
+
+    echo "'start proxy' script has been installed"
+  else
+
+    echo "ERROR: 'start proxy' script has not been installed"
+    exit 1
+  fi
+else
+
+  echo "'start proxy' script is already installed"
+fi
 
 # shellcheck disable=SC2039,SC1090
-# TODO: Uncomment
-#source "$startProxyScript"
+source "$startProxyScript"
 
 # TODO:
 # sleep 900; sh proxy_install.sh &
