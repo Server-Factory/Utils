@@ -23,70 +23,75 @@ if ! test -e "$validate_ip_script"; then
   exit 1
 fi
 
-# FIXME: Handle properly when host is ip address already
-
 # shellcheck disable=SC2154
 if ! [ "$proxy_host_ip" = "" ]; then
 
   echo "Last known proxy IP: $proxy_host_ip"
 fi
 
-get_ip_script="$here"/getip.sh
-if test -e "$get_ip_script"; then
+if sh "$validate_ip_script" "$host" >/dev/null 2>&1; then
 
-  if sh "$get_ip_script" "$host" >/dev/null 2>&1; then
+  proxy_ip="$host"
+  echo "Proxy host is IP address: $proxy_ip"
+else
 
-    proxy_ip=$(sh "$get_ip_script" "$host")
-    if [ "$proxy_ip" = "" ]; then
+  get_ip_script="$here"/getip.sh
+  if test -e "$get_ip_script"; then
 
-      echo "ERROR: proxy IP was not obtained successfully"
-      if [ "$proxy_host_ip" = "" ]; then
+    if sh "$get_ip_script" "$host" >/dev/null 2>&1; then
 
-        echo "ERROR: Could not obtain proxy IP address (1)"
-        exit 1
+      proxy_ip=$(sh "$get_ip_script" "$host")
+      if [ "$proxy_ip" = "" ]; then
+
+        echo "ERROR: proxy IP was not obtained successfully"
+        if [ "$proxy_host_ip" = "" ]; then
+
+          echo "ERROR: Could not obtain proxy IP address (1)"
+          exit 1
+        else
+
+          proxy_ip="$proxy_host_ip"
+          host="$proxy_ip"
+          echo "Proxy IP (1B): $host"
+        fi
       else
 
-        proxy_ip="$proxy_host_ip"
+        echo "Proxy IP (1): $proxy_ip"
+      fi
+
+      if sh "$validate_ip_script" "$proxy_ip" >/dev/null 2>&1; then
+
+        echo "Proxy IP (2): $proxy_ip"
         host="$proxy_ip"
-        echo "Proxy IP (1B): $host"
+      else
+
+        if [ "$proxy_host_ip" = "" ]; then
+
+          echo "ERROR: Could not obtain proxy IP address (2)"
+          exit 1
+        else
+
+          host="$proxy_host_ip"
+          echo "Proxy IP (2B): $host"
+        fi
       fi
     else
 
-      echo "Proxy IP (1): $proxy_ip"
-    fi
-
-    if sh "$validate_ip_script" "$proxy_ip" >/dev/null 2>&1; then
-
-      echo "Proxy IP (2): $proxy_ip"
-      host="$proxy_ip"
-    else
-
       if [ "$proxy_host_ip" = "" ]; then
 
-        echo "ERROR: Could not obtain proxy IP address (2)"
+        echo "ERROR: Could not obtain proxy IP address (3)"
         exit 1
       else
 
         host="$proxy_host_ip"
-        echo "Proxy IP (2B): $host"
+        echo "Proxy IP (3B): $host"
       fi
     fi
   else
 
-    if [ "$proxy_host_ip" = "" ]; then
-
-      echo "ERROR: Could not obtain proxy IP address (3)"
-      exit 1
-    else
-
-      host="$proxy_host_ip"
-      echo "Proxy IP (3B): $host"
-    fi
+    echo "ERROR: $get_ip_script is unavailable"
+    exit 1
   fi
-else
-
-  echo "ERROR: $get_ip_script is unavailable"
-  exit 1
 fi
 
 if ! [ "$certificate_endpoint" = "$empty" ]; then
