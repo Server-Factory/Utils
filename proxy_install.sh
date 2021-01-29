@@ -312,9 +312,7 @@ fi
 
 # shellcheck disable=SC2039,SC1090
 source "$startProxyScript"
-
-# TODO:
-# sleep 900; sh proxy_install.sh &
+sleep 900; sh "$0" &
 
 echo "WORK IN PROGRESS"
 exit 1
