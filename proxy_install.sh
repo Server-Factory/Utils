@@ -196,7 +196,7 @@ if ! [ "$certificate_endpoint" = "$empty" ]; then
   fi
 fi
 
-if [ -n "$is_selfSigned_ca" ]; then
+if [ "$is_selfSigned_ca" = "true" ]; then
 
   echo "Proxy is using self-signed certificate"
   if [ "$certificate_endpoint" = "$empty" ]; then
