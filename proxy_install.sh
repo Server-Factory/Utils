@@ -312,7 +312,7 @@ fi
 
 # shellcheck disable=SC2039,SC1090
 source "$startProxyScript"
-sleep 900; sh "$0" &
+sleep 900 && sh "$0" "$1" "$2" "$3" "$4" "$5" "$6" "$7" &
 
 echo "WORK IN PROGRESS"
 exit 1
