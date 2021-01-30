@@ -8,13 +8,41 @@ password="$4"
 is_selfSigned_ca="$5"
 script_root="$6"
 certificate_endpoint="$7"
+delayed="$8"
 here=$(dirname "$0")
 empty="_empty"
+log="proxy_install.log"
 
-echo "Initializing Proxy"
-echo "Proxy init. parameters (1): (host=$host, port=$port, account=$account, password=$password)"
-echo "Proxy init. parameters (2): (is_selfSigned_ca=$is_selfSigned_ca, script_root=$script_root)"
-echo "Proxy init. parameters (3): (certificate_endpoint=$certificate_endpoint)"
+delay=10
+if ! [ "$delayed" = "delayed" ]; then
+
+  delayMsg="Delay set to $delay seconds"
+  sleep 10
+else
+
+  delayMsg="No delay set"
+fi
+echo "$delayMsg"
+
+msg1="Initializing Proxy"
+msg2="Proxy init. parameters (1): (host=$host, port=$port, account=$account, password=$password)"
+msg3="Proxy init. parameters (2): (is_selfSigned_ca=$is_selfSigned_ca, script_root=$script_root)"
+msg4="Proxy init. parameters (3): (certificate_endpoint=$certificate_endpoint)"
+
+echo "$msg1"
+echo "$msg2"
+echo "$msg3"
+echo "$msg4"
+
+date=$(date)
+# shellcheck disable=SC2129
+echo "$date" >>"$here/$log"
+echo "$delayMsg" >>"$here/$log"
+echo "$msg1" >>"$here/$log"
+echo "$msg2" >>"$here/$log"
+echo "$msg3" >>"$here/$log"
+echo "$msg4" >>"$here/$log"
+echo "- - - - - - - - - -" >>"$here/$log"
 
 validate_ip_script="$here/validate_ip_address.sh"
 if ! test -e "$validate_ip_script"; then
@@ -312,9 +340,7 @@ fi
 
 # shellcheck disable=SC2039,SC1090
 source "$startProxyScript"
-
-# FIXME:
-# (sleep 10 && sh "$0" "$1" "$2" "$3" "$4" "$5" "$6" "$7" >/dev/null) &
+nohup sh "$0" "$1" "$2" "$3" "$4" "$5" "$6" "$7" delayed >/dev/null 2>&1 &
 
 echo "WORK IN PROGRESS"
 exit 1
