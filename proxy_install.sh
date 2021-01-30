@@ -13,7 +13,7 @@ here=$(dirname "$0")
 empty="_empty"
 log="proxy_install.log"
 
-delay=10
+delay=10 # TODO: Set to: 900
 if [ "$delayed" = "delayed" ]; then
 
   delayMsg="Delay set to $delay seconds"
@@ -351,5 +351,6 @@ else
   nohup sh "$0" "$1" "$2" "$3" "$4" "$5" "$6" "$7" delayed >/dev/null 2>&1 &
 fi
 
+# TODO: Remove:
 echo "WORK IN PROGRESS"
 exit 1
