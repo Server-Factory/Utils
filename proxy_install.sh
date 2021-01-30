@@ -340,7 +340,16 @@ fi
 
 # shellcheck disable=SC2039,SC1090
 source "$startProxyScript"
-nohup sh "$0" "$1" "$2" "$3" "$4" "$5" "$6" "$7" delayed >/dev/null 2>&1 &
+if sh "$validate_ip_script" "$host_name" >/dev/null 2>&1; then
+
+  echo "WARNING: Scheduling delayed repeated proxy install execution"
+  echo "Proxy installation will be performed on each $delayed seconds"
+  echo "so proxy Ip address and certificate are up to date."
+  nohup sh "$0" "$1" "$2" "$3" "$4" "$5" "$6" "$7" delayed >/dev/null 2>&1 &
+else
+
+  echo "Delayed repeated proxy install execution will not be scheduled"
+fi
 
 echo "WORK IN PROGRESS"
 exit 1
