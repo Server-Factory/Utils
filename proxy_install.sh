@@ -347,7 +347,7 @@ else
 
   echo "WARNING: Scheduling delayed repeated proxy install execution."
   echo "Proxy installation will be performed on each $delay seconds"
-  echo "so proxy Ip address and certificate are up to date."
+  echo "so proxy IP address and certificate are up to date."
   nohup sh "$0" "$1" "$2" "$3" "$4" "$5" "$6" "$7" delayed >/dev/null 2>&1 &
 fi
 
