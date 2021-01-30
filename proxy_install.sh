@@ -13,6 +13,8 @@ here=$(dirname "$0")
 empty="_empty"
 log="proxy_install.log"
 
+# FIXME: Make sure that the script can be scheduled on system reboot
+
 delay=10 # TODO: Set to: 900
 if [ "$delayed" = "delayed" ]; then
 
