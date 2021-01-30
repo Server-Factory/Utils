@@ -14,7 +14,7 @@ empty="_empty"
 log="proxy_install.log"
 
 delay=10
-if ! [ "$delayed" = "delayed" ]; then
+if [ "$delayed" = "delayed" ]; then
 
   delayMsg="Delay set to $delay seconds"
   sleep 10
@@ -27,7 +27,7 @@ echo "$delayMsg"
 msg1="Initializing Proxy"
 msg2="Proxy init. parameters (1): (host=$host, port=$port, account=$account, password=$password)"
 msg3="Proxy init. parameters (2): (is_selfSigned_ca=$is_selfSigned_ca, script_root=$script_root)"
-msg4="Proxy init. parameters (3): (certificate_endpoint=$certificate_endpoint)"
+msg4="Proxy init. parameters (3): (certificate_endpoint=$certificate_endpoint, delayed=$delayed)"
 
 echo "$msg1"
 echo "$msg2"
