@@ -38,7 +38,7 @@ is_selfSigned_ca=$5
 script_root=$6
 certificate_endpoint=$7
 delayed=$8
-""" | tee "$config_file" && chmod 640 "$config_file"; then
+""" | tee "$config_file" >/dev/null 2>&1 && chmod 640 "$config_file"; then
 
     echo "$config_file: configuration saved"
   else
@@ -62,7 +62,7 @@ ExecStart=$proxy_update_script
 
 [Install]
 WantedBy=multi-user.target
-""" | tee "$proxy_service" && chmod 640 "$config_file"; then
+""" | tee "$proxy_service" >/dev/null 2>&1 && chmod 640 "$config_file"; then
 
     echo "$proxy_service: proxy service file saved"
     # TODO: enable and start service
