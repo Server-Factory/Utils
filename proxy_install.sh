@@ -12,12 +12,39 @@ delayed="$8"
 here=$(dirname "$0")
 empty="_empty"
 log="proxy_install.log"
+config_file_name="proxy.cfg"
+config_file="$script_root/$config_file_name"
 
 # FIXME: Make sure that the script can be scheduled on system reboot
 # 1. Create proxy configuration file (configuration file goes here: $script_root)
 # 2. Start proxy service (service file goes here: $script_root)
 # 3. Proxy service will start the script
 
+if sh "$validate_ip_script" "$host_name" >/dev/null 2>&1; then
+
+  echo "$config_file configuration is not required"
+else
+
+  if echo """
+  host=$1
+  port=$2
+  account=$3
+  password=$4
+  is_selfSigned_ca=$5
+  script_root=$6
+  certificate_endpoint=$7
+  delayed=$8
+  """ | tee "$config_file"; then
+
+    echo "$config_file: configuration saved"
+  else
+
+    echo "ERROR: $config_file configuration was not saved"
+    exit 1
+  fi
+fi
+
+# TODO: Move delay if needed
 delay=10 # TODO: Set to: 900
 if [ "$delayed" = "delayed" ]; then
 
