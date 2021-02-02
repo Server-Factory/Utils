@@ -14,6 +14,9 @@ empty="_empty"
 log="proxy_install.log"
 
 # FIXME: Make sure that the script can be scheduled on system reboot
+# 1. Create proxy configuration file
+# 2. Start proxy service
+# 3. Proxy service will start the script
 
 delay=10 # TODO: Set to: 900
 if [ "$delayed" = "delayed" ]; then
