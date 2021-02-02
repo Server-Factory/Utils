@@ -29,16 +29,15 @@ if sh "$validate_ip_script" "$host_name" >/dev/null 2>&1; then
   echo "$config_file configuration is not required"
 else
 
-  if echo """
-host=$1
+  if # shellcheck disable=SC1078,SC1079
+ echo """host=$1
 port=$2
 account=$3
 password=$4
 is_selfSigned_ca=$5
 script_root=$6
 certificate_endpoint=$7
-delayed=$8
-""" | tee "$config_file" >/dev/null 2>&1 && chmod 640 "$config_file"; then
+delayed=$8""" | tee "$config_file" >/dev/null 2>&1 && chmod 640 "$config_file"; then
 
     echo "$config_file: proxy configuration file saved"
   else
@@ -53,16 +52,15 @@ delayed=$8
     exit 1
   fi
 
-  if echo """
-[Unit]
+  # shellcheck disable=SC1078,SC1079
+  if echo """[Unit]
 Description=Proxy service
 
 [Service]
 ExecStart=$proxy_update_script
 
 [Install]
-WantedBy=multi-user.target
-""" | tee "$proxy_service" >/dev/null 2>&1 && chmod 640 "$config_file"; then
+WantedBy=multi-user.target""" | tee "$proxy_service" >/dev/null 2>&1 && chmod 640 "$config_file"; then
 
     echo "$proxy_service: proxy service file saved"
     # TODO: enable and start service
