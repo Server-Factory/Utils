@@ -14,8 +14,8 @@ empty="_empty"
 log="proxy_install.log"
 
 # FIXME: Make sure that the script can be scheduled on system reboot
-# 1. Create proxy configuration file
-# 2. Start proxy service
+# 1. Create proxy configuration file (configuration file goes here: $script_root)
+# 2. Start proxy service (service file goes here: $script_root)
 # 3. Proxy service will start the script
 
 delay=10 # TODO: Set to: 900
@@ -281,7 +281,7 @@ else
   echo "'Insecure' certificate settings are not needed (2)"
 fi
 
-cmdStartProxy="setup_proxy.sh"
+cmdStartProxy="apply_proxy.sh"
 startProxyScript="$script_root"/"$cmdStartProxy"
 if echo """
 #!/bin/sh
