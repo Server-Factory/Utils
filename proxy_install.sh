@@ -13,10 +13,14 @@ here=$(dirname "$0")
 empty="_empty"
 log="proxy_install.log"
 config_file_name="proxy.cfg"
+proxy_service_file_name="proxy.service"
+proxy_update_script_name="proxy_update.sh"
 config_file="$script_root/$config_file_name"
+proxy_service="$script_root/$proxy_service_file_name"
+proxy_update_script="$here/$proxy_update_script_name"
 
 # FIXME: Make sure that the script can be scheduled on system reboot
-# 1. Create proxy configuration file (configuration file goes here: $script_root)
+# 1. Create proxy configuration file (configuration file goes here: $script_root) [ done ]
 # 2. Start proxy service (service file goes here: $script_root)
 # 3. Proxy service will start the script
 
@@ -34,12 +38,37 @@ is_selfSigned_ca=$5
 script_root=$6
 certificate_endpoint=$7
 delayed=$8
-  """ | tee "$config_file"; then
+""" | tee "$config_file" && chmod 640 "$config_file"; then
 
     echo "$config_file: configuration saved"
   else
 
     echo "ERROR: $config_file configuration was not saved"
+    exit 1
+  fi
+
+  if ! test -e "$proxy_update_script"; then
+
+    echo "ERROR: $proxy_update_script is not available"
+    exit 1
+  fi
+
+  if echo """
+[Unit]
+Description=Proxy service
+
+[Service]
+ExecStart=$proxy_update_script
+
+[Install]
+WantedBy=multi-user.target
+""" | tee "$proxy_service" && chmod 640 "$config_file"; then
+
+    echo "$proxy_service: proxy service file saved"
+    # TODO: enable and start service
+  else
+
+    echo "ERROR: $proxy_service proxy service file not saved"
     exit 1
   fi
 fi
