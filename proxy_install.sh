@@ -40,10 +40,10 @@ certificate_endpoint=$7
 delayed=$8
 """ | tee "$config_file" >/dev/null 2>&1 && chmod 640 "$config_file"; then
 
-    echo "$config_file: configuration saved"
+    echo "$config_file: proxy configuration file saved"
   else
 
-    echo "ERROR: $config_file configuration was not saved"
+    echo "ERROR: $config_file proxy configuration file not saved"
     exit 1
   fi
 
