@@ -26,14 +26,14 @@ if sh "$validate_ip_script" "$host_name" >/dev/null 2>&1; then
 else
 
   if echo """
-  host=$1
-  port=$2
-  account=$3
-  password=$4
-  is_selfSigned_ca=$5
-  script_root=$6
-  certificate_endpoint=$7
-  delayed=$8
+host=$1
+port=$2
+account=$3
+password=$4
+is_selfSigned_ca=$5
+script_root=$6
+certificate_endpoint=$7
+delayed=$8
   """ | tee "$config_file"; then
 
     echo "$config_file: configuration saved"
