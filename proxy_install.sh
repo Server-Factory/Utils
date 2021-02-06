@@ -75,6 +75,18 @@ WantedBy=multi-user.target""" | tee "$proxy_service" >/dev/null 2>&1 && chmod 64
       exit 1
     fi
 
+    systemd_service="/etc/systemd/system/$proxy_service_file_name"
+    if test -e systemd_service; then
+
+      if rm -f "$systemd_service"; then
+
+        echo "$systemd_service removed"
+      else
+
+        echo "ERROR: $systemd_service could not be removed"
+        exit 1
+      fi
+    fi
     if "$setenforce_script" && systemctl enable "$proxy_service" && systemctl start "$proxy_service"; then
 
       echo "Proxy service started"
