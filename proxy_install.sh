@@ -11,11 +11,14 @@ certificate_endpoint="$7"
 delayed="$8"
 here=$(dirname "$0")
 empty="_empty"
-log="proxy_install.log"
+log_name="proxy_install.log"
+log="$script_root/$log_name"
 config_file_name="proxy.cfg"
+setenforce_script_name="setenforce.sh"
 proxy_service_file_name="proxy.service"
 proxy_update_script_name="proxy_update.sh"
 config_file="$script_root/$config_file_name"
+setenforce_script="$here/$setenforce_script_name"
 proxy_service="$script_root/$proxy_service_file_name"
 proxy_update_script="$here/$proxy_update_script_name"
 
@@ -30,14 +33,17 @@ if sh "$validate_ip_script" "$host_name" >/dev/null 2>&1; then
 else
 
   if # shellcheck disable=SC1078,SC1079
- echo """host=$1
+    echo """host=$1
 port=$2
 account=$3
 password=$4
 is_selfSigned_ca=$5
 script_root=$6
 certificate_endpoint=$7
-delayed=$8""" | tee "$config_file" >/dev/null 2>&1 && chmod 640 "$config_file"; then
+delayed=$8
+utils=$here
+""" | tee "$config_file" >/dev/null 2>&1 && chmod 640 "$config_file"
+  then
 
     echo "$config_file: proxy configuration file saved"
   else
@@ -63,7 +69,13 @@ ExecStart=$proxy_update_script
 WantedBy=multi-user.target""" | tee "$proxy_service" >/dev/null 2>&1 && chmod 640 "$config_file"; then
 
     echo "$proxy_service: proxy service file saved"
-    if systemctl enable "$proxy_service"; then
+    if ! test -e "$setenforce_script"; then
+
+      echo "ERROR: $setenforce_script does not exits"
+      exit 1
+    fi
+
+    if "$setenforce_script" && systemctl enable "$proxy_service" && systemctl start "$proxy_service"; then
 
       echo "Proxy service started"
     else
@@ -102,13 +114,13 @@ echo "$msg4"
 
 date=$(date)
 # shellcheck disable=SC2129
-echo "$date" >>"$here/$log"
-echo "$delayMsg" >>"$here/$log"
-echo "$msg1" >>"$here/$log"
-echo "$msg2" >>"$here/$log"
-echo "$msg3" >>"$here/$log"
-echo "$msg4" >>"$here/$log"
-echo "- - - - - - - - - -" >>"$here/$log"
+echo "$date" >>"$log"
+echo "$delayMsg" >>"$log"
+echo "$msg1" >>"$log"
+echo "$msg2" >>"$log"
+echo "$msg3" >>"$log"
+echo "$msg4" >>"$log"
+echo "- - - - - - - - - -" >>"$log"
 
 validate_ip_script="$here/validate_ip_address.sh"
 if ! test -e "$validate_ip_script"; then
