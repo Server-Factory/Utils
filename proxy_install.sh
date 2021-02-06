@@ -89,7 +89,16 @@ WantedBy=multi-user.target""" | tee "$proxy_service" >/dev/null 2>&1 && chmod 64
       fi
     fi
 
-    if "$setenforce_script" && systemctl enable "$proxy_service" && systemctl start "$proxy_service"; then
+    if cp "$proxy_service" "$systemd_service"; then
+
+      echo "$systemd_service is ready"
+    else
+
+      echo "ERROR: $proxy_service could not be created"
+      exit 1
+    fi
+
+    if "$setenforce_script" && systemctl enable "$proxy_service_file_name" && systemctl start "$proxy_service_file_name"; then
 
       echo "Proxy service started"
     else
