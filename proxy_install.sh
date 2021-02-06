@@ -62,11 +62,18 @@ utils=$here
   if echo """[Unit]
 Description=Proxy service
 
+Wants=network.target
+After=syslog.target network-online.target
+
 [Service]
+Type=simple
 ExecStart=$proxy_update_script
+Restart=on-failure
+RestartSec=10
+KillMode=process
 
 [Install]
-WantedBy=multi-user.target""" | tee "$proxy_service" >/dev/null 2>&1 && chmod 640 "$config_file"; then
+WantedBy=multi-user.target""" | tee "$proxy_service" >/dev/null 2>&1 && chmod 640 "$proxy_service"; then
 
     echo "$proxy_service: proxy service file saved"
     if ! test -e "$setenforce_script"; then
