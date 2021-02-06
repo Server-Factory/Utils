@@ -63,7 +63,14 @@ ExecStart=$proxy_update_script
 WantedBy=multi-user.target""" | tee "$proxy_service" >/dev/null 2>&1 && chmod 640 "$config_file"; then
 
     echo "$proxy_service: proxy service file saved"
-    # TODO: enable and start service
+    if systemctl enable "$proxy_service"; then
+
+      echo "Proxy service started"
+    else
+
+      echo "ERROR: Could not start proxy service"
+      exit 1
+    fi
   else
 
     echo "ERROR: $proxy_service proxy service file not saved"
