@@ -61,14 +61,12 @@ utils=$here
   # shellcheck disable=SC1078,SC1079
   if echo """[Unit]
 Description=Proxy service
-
-Wants=network.target
-After=syslog.target network-online.target
+After=network.target
 
 [Service]
 Type=simple
 ExecStart=$proxy_update_script
-Restart=on-failure
+Restart=always
 RestartSec=10
 KillMode=process
 
