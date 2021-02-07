@@ -61,14 +61,10 @@ utils=$here
   # shellcheck disable=SC1078,SC1079
   if echo """[Unit]
 Description=Proxy service
-After=network.target
 
 [Service]
 Type=simple
 ExecStart=$proxy_update_script
-Restart=always
-RestartSec=10
-KillMode=process
 
 [Install]
 WantedBy=multi-user.target""" | tee "$proxy_service" >/dev/null 2>&1 && chmod 640 "$proxy_service"; then
