@@ -99,7 +99,6 @@ WantedBy=multi-user.target""" | tee "$proxy_service" >/dev/null 2>&1 && chmod 64
       exit 1
     fi
 
-    # FIXME: Does not run on system boot (SELinux prevents it)
     if "$setenforce_script" && systemctl enable "$proxy_service_file_name" && systemctl start "$proxy_service_file_name"; then
       echo "Proxy service started"
 
@@ -114,16 +113,13 @@ WantedBy=multi-user.target""" | tee "$proxy_service" >/dev/null 2>&1 && chmod 64
             exit 1
           fi
 
-          if echo """
-SELINUX=disabled
-SELINUXTYPE=targeted
-""" > "$selinux_config"; then
+          if echo "SELINUX=disabled" > "$selinux_config" && echo "SELINUXTYPE=targeted" | tee -a "$selinux_config"; then
 
-          echo "SELinux disabled"
-        else
+            echo "SELinux disabled"
+          else
 
-          echo "ERROR: Could not disable SELinux"
-        fi
+            echo "ERROR: Could not disable SELinux"
+          fi
       else
 
         echo "WARNING: $selinux_config not found"
