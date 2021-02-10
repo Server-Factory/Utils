@@ -106,7 +106,11 @@ WantedBy=multi-user.target""" | tee "$proxy_service" >/dev/null 2>&1 && chmod 64
       selinux_config="$selinux_config_path/config"
       selinux_config_backup="$selinux_config_path/config.bak"
 
-      if ! sestatus | grep -i "disabled"; then
+      if sestatus | grep -i "disabled" >/dev/null 2>&1; then
+
+        echo "SELinux is already disabled"
+      else
+
         if test -e "$selinux_config"; then
 
             if ! test -e "$selinux_config_backup"; then
@@ -121,7 +125,7 @@ WantedBy=multi-user.target""" | tee "$proxy_service" >/dev/null 2>&1 && chmod 64
 
             if echo "SELINUX=disabled" > "$selinux_config" && echo "SELINUXTYPE=targeted" | tee -a "$selinux_config"; then
 
-              echo "SELinux disabled"
+              echo "SELinux is disabled"
             else
 
               echo "ERROR: Could not disable SELinux"
