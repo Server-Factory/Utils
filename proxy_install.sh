@@ -105,28 +105,31 @@ WantedBy=multi-user.target""" | tee "$proxy_service" >/dev/null 2>&1 && chmod 64
       selinux_config_path="/etc/selinux"
       selinux_config="$selinux_config_path/config"
       selinux_config_backup="$selinux_config_path/config.bak"
-      if test -e "$selinux_config"; then
 
-          if ! test -e "$selinux_config_backup"; then
+      if ! sestatus | grep -i "disabled"; then
+        if test -e "$selinux_config"; then
 
-            echo "$selinux_config: backing up"
-            if ! mv "$selinux_config" "$selinux_config_backup"; then
+            if ! test -e "$selinux_config_backup"; then
 
-              echo "ERROR: $selinux_config could not backup"
-              exit 1
+              echo "$selinux_config: backing up"
+              if ! mv "$selinux_config" "$selinux_config_backup"; then
+
+                echo "ERROR: $selinux_config could not backup"
+                exit 1
+              fi
             fi
-          fi
 
-          if echo "SELINUX=disabled" > "$selinux_config" && echo "SELINUXTYPE=targeted" | tee -a "$selinux_config"; then
+            if echo "SELINUX=disabled" > "$selinux_config" && echo "SELINUXTYPE=targeted" | tee -a "$selinux_config"; then
 
-            echo "SELinux disabled"
-          else
+              echo "SELinux disabled"
+            else
 
-            echo "ERROR: Could not disable SELinux"
-          fi
-      else
+              echo "ERROR: Could not disable SELinux"
+            fi
+        else
 
-        echo "WARNING: $selinux_config not found"
+          echo "WARNING: $selinux_config not found"
+        fi
       fi
     else
 
