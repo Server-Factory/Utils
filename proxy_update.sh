@@ -1,6 +1,7 @@
 #!/bin/sh
 
+working_directory="$1"
+
 # TODO: Load configuration from .cfg file
 
-# TODO: Absolute path to log file
-date >> proxy_update.log
+date > "$working_directory"/proxy_update.log

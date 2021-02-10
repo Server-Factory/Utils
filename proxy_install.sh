@@ -22,11 +22,6 @@ setenforce_script="$here/$setenforce_script_name"
 proxy_service="$script_root/$proxy_service_file_name"
 proxy_update_script="$here/$proxy_update_script_name"
 
-# FIXME: Make sure that the script can be scheduled on system reboot
-# 1. Create proxy configuration file (configuration file goes here: $script_root) [ done ]
-# 2. Start proxy service (service file goes here: $script_root)
-# 3. Proxy service will start the script
-
 if sh "$validate_ip_script" "$host_name" >/dev/null 2>&1; then
 
   echo "$config_file configuration is not required"
@@ -64,7 +59,7 @@ Description=Proxy service
 
 [Service]
 Type=simple
-ExecStart=$proxy_update_script
+ExecStart=$proxy_update_script $script_root
 
 [Install]
 WantedBy=multi-user.target""" | tee "$proxy_service" >/dev/null 2>&1 && chmod 640 "$proxy_service"; then
