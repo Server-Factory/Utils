@@ -33,7 +33,6 @@ port=$2
 account=$3
 password=$4
 is_selfSigned_ca=$5
-script_root=$6
 certificate_endpoint=$7
 delayed=$8
 utils=$here
