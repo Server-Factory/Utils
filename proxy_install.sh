@@ -14,11 +14,11 @@ empty="_empty"
 log_name="proxy_install.log"
 log="$script_root/$log_name"
 config_file_name="proxy.cfg"
-setenforce_script_name="setenforce.sh"
+set_enforce_script_name="setenforce.sh"
 proxy_service_file_name="proxy.service"
 proxy_update_script_name="proxy_update.sh"
 config_file="$script_root/$config_file_name"
-setenforce_script="$here/$setenforce_script_name"
+set_enforce_script="$here/$set_enforce_script_name"
 proxy_service="$script_root/$proxy_service_file_name"
 proxy_update_script="$here/$proxy_update_script_name"
 
@@ -64,9 +64,9 @@ ExecStart=$proxy_update_script $script_root
 WantedBy=multi-user.target""" | tee "$proxy_service" >/dev/null 2>&1 && chmod 640 "$proxy_service"; then
 
     echo "$proxy_service: proxy service file saved"
-    if ! test -e "$setenforce_script"; then
+    if ! test -e "$set_enforce_script"; then
 
-      echo "ERROR: $setenforce_script does not exits"
+      echo "ERROR: $set_enforce_script does not exits"
       exit 1
     fi
 
@@ -93,7 +93,7 @@ WantedBy=multi-user.target""" | tee "$proxy_service" >/dev/null 2>&1 && chmod 64
       exit 1
     fi
 
-    if "$setenforce_script" && systemctl enable "$proxy_service_file_name" && systemctl start "$proxy_service_file_name"; then
+    if "$set_enforce_script" && systemctl enable "$proxy_service_file_name" && systemctl start "$proxy_service_file_name"; then
       echo "Proxy service started"
 
       selinux_config_path="/etc/selinux"

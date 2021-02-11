@@ -19,5 +19,10 @@ printf "\nConfiguration:\n\n%s\n\n" "$config" >> "$log"
 while read -r line; do
 
   echo ">>> $line" >> "$log"
+  export IFS="="
+  for parameter in $line; do
+
+    echo ">>> Parameter: $parameter" >> "$log"
+  done
 done <"$config_file"
 
