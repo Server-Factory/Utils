@@ -14,12 +14,7 @@ if ! test -e "$config_file"; then
 fi
 
 config=$(cat "$config_file")
-
-# shellcheck disable=SC2129
-echo "" >> "$log"
-echo "Configuration:" >> "$log"
-echo "$config" >> "$log"
-echo "" >> "$log"
+printf "\nConfiguration:\n\n%s\n\n" "$config" >> "$log"
 
 while read -r line; do
 
