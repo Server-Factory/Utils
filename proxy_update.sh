@@ -20,9 +20,18 @@ while read -r line; do
 
   echo ">>> $line" >> "$log"
   export IFS="="
+  parameter_name=""
   for parameter in $line; do
 
-    echo ">>> Parameter: $parameter" >> "$log"
+    if [ -z "$parameter_name" ]
+    then
+
+      echo ">>> Parameter name: $parameter" >> "$log"
+      parameter_name="$parameter"
+    else
+
+      echo ">>> Parameter value: $parameter" >> "$log"
+    fi
   done
 done <"$config_file"
 
