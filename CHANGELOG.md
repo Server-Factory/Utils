@@ -6,7 +6,7 @@ new features that have been introduced.
 ## Version 1.0.0 Alpha 4.5
 
 - Proxy installation script
-- Monitor file's tail for changes.
+- Monitor small files for changes.
 
 ## Version 1.0.0 Alpha 4.4
 

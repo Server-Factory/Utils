@@ -3,10 +3,10 @@
 file="$1"
 if test -e "$file"; then
 
-  content=$(tail "$file")
+  clear
+  content=$(cat "$file")
   printf "%s" "$content"
   sleep 3
-  printf "\r"
   sh ./"$0" "$file"
 else
 
