@@ -38,7 +38,7 @@ printf "Loaded parameters:\n\nhost=%s\nport=%s\naccount=%s\npassword=%s\n" "$hos
 # shellcheck disable=SC2154,SC2129
 printf "is_selfSigned_ca=%s\ncertificate_endpoint=%s\n" "$is_selfSigned_ca" "$certificate_endpoint" >> "$log"
 # shellcheck disable=SC2154,SC2129
-printf "delayed=%s\nutils=%s\n" "$delayed" "$utils" >> "$log"
+printf "delayed=%s\nutils=%s\n\n" "$delayed" "$utils" >> "$log"
 
 
 echo "$date_time" >> "$log"
