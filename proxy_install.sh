@@ -8,7 +8,6 @@ password="$4"
 is_selfSigned_ca="$5"
 script_root="$6"
 certificate_endpoint="$7"
-delayed="$8"
 here=$(dirname "$0")
 empty="_empty"
 log_name="proxy_install.log"
@@ -27,6 +26,7 @@ if sh "$validate_ip_script" "$host_name" >/dev/null 2>&1; then
   echo "$config_file configuration is not required"
 else
 
+  frequency=10
   if # shellcheck disable=SC1078,SC1079
     echo """host=$1
 port=$2
@@ -34,7 +34,7 @@ account=$3
 password=$4
 is_selfSigned_ca=$5
 certificate_endpoint=$7
-delayed=$8
+frequency=$frequency
 utils=$here
 """ | tee "$config_file" >/dev/null 2>&1 && chmod 640 "$config_file"
   then
@@ -466,19 +466,6 @@ source $startProxyScript
 else
 
   echo "'start proxy' script is already installed"
-fi
-
-# shellcheck disable=SC2039,SC1090
-source "$startProxyScript"
-if sh "$validate_ip_script" "$host_name" >/dev/null 2>&1; then
-
-  echo "Delayed repeated proxy install execution will not be scheduled"
-else
-
-  echo "WARNING: Scheduling delayed repeated proxy install execution."
-  echo "Proxy installation will be performed on each $delay seconds"
-  echo "so proxy IP address and certificate are up to date."
-  nohup sh "$0" "$1" "$2" "$3" "$4" "$5" "$6" "$7" delayed >/dev/null 2>&1 &
 fi
 
 # TODO: Remove:
