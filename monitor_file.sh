@@ -4,8 +4,7 @@ file="$1"
 if test -e "$file"; then
 
   clear
-  content=$(cat "$file")
-  printf "%s" "$content"
+  cat "$file"
   sleep 3
   sh ./"$0" "$file"
 else
