@@ -1,6 +1,7 @@
 #!/bin/sh
 
-while [ true ]; do
+while true; do
+
   date_time=$(date)
   working_directory="$1"
   log="$working_directory"/proxy_update.log
