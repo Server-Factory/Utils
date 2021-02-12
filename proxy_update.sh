@@ -4,7 +4,8 @@ working_directory="$1"
 log="$working_directory"/proxy_update.log
 config_file="$working_directory"/proxy.cfg
 
-date >"$log"
+date_time=$(date)
+echo "$date_time" > "$log"
 
 if ! test -e "$config_file"; then
 
@@ -38,3 +39,6 @@ printf "Loaded parameters:\n\nhost=%s\nport=%s\naccount=%s\npassword=%s\n" "$hos
 printf "is_selfSigned_ca=%s\ncertificate_endpoint=%s\n" "$is_selfSigned_ca" "$certificate_endpoint" >> "$log"
 # shellcheck disable=SC2154,SC2129
 printf "delayed=%s\nutils=%s\n" "$delayed" "$utils" >> "$log"
+
+
+echo "$date_time" >> "$log"
