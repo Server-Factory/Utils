@@ -52,6 +52,7 @@ utils=$here
     exit 1
   fi
 
+  # TODO: Deploy proto service file
   # shellcheck disable=SC1078,SC1079
   if echo """[Unit]
 Description=Proxy service
