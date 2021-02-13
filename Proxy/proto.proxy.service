@@ -1,0 +1,9 @@
+[Unit]
+Description=Proxy service
+
+[Service]
+Type=simple
+ExecStart={{SERVER.SERVER_HOME}}/Utils/proxy_update.sh {{SERVER.SERVER_HOME}}/Server/Proxy
+
+[Install]
+WantedBy=multi-user.target

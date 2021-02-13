@@ -1,472 +1,121 @@
 #!/bin/sh
 
-host="$1"
-host_name="$host"
-port="$2"
-account="$3"
-password="$4"
-is_selfSigned_ca="$5"
 script_root="$6"
-certificate_endpoint="$7"
 here=$(dirname "$0")
-empty="_empty"
-log_name="proxy_install.log"
-log="$script_root/$log_name"
 config_file_name="proxy.cfg"
 set_enforce_script_name="setenforce.sh"
 proxy_service_file_name="proxy.service"
-proxy_update_script_name="proxy_update.sh"
 config_file="$script_root/$config_file_name"
 set_enforce_script="$here/$set_enforce_script_name"
 proxy_service="$script_root/$proxy_service_file_name"
-proxy_update_script="$here/$proxy_update_script_name"
 
-if sh "$validate_ip_script" "$host_name" >/dev/null 2>&1; then
+if test -e "$config_file"; then
 
-  echo "$config_file configuration is not required"
-else
+  if ! rm -f "$config_file"; then
 
-  frequency=10
-  if # shellcheck disable=SC1078,SC1079
-    echo """host=$1
-port=$2
-account=$3
-password=$4
-is_selfSigned_ca=$5
-certificate_endpoint=$7
-frequency=$frequency
-utils=$here
-""" | tee "$config_file" >/dev/null 2>&1 && chmod 640 "$config_file"
-  then
-
-    echo "$config_file: proxy configuration file saved"
-  else
-
-    echo "ERROR: $config_file proxy configuration file not saved"
-    exit 1
-  fi
-
-  if ! test -e "$proxy_update_script"; then
-
-    echo "ERROR: $proxy_update_script is not available"
-    exit 1
-  fi
-
-  # TODO: Deploy proto service file
-  # shellcheck disable=SC1078,SC1079
-  if echo """[Unit]
-Description=Proxy service
-
-[Service]
-Type=simple
-ExecStart=$proxy_update_script $script_root
-
-[Install]
-WantedBy=multi-user.target""" | tee "$proxy_service" >/dev/null 2>&1 && chmod 640 "$proxy_service"; then
-
-    echo "$proxy_service: proxy service file saved"
-    if ! test -e "$set_enforce_script"; then
-
-      echo "ERROR: $set_enforce_script does not exits"
-      exit 1
-    fi
-
-    systemd_service="/etc/systemd/system/$proxy_service_file_name"
-    if test -e systemd_service; then
-
-      echo "$systemd_service already exists, cleaning up"
-      if rm -f "$systemd_service"; then
-
-        echo "$systemd_service removed"
-      else
-
-        echo "ERROR: $systemd_service could not be removed"
-        exit 1
-      fi
-    fi
-
-    if cp "$proxy_service" "$systemd_service"; then
-
-      echo "$systemd_service is ready"
-    else
-
-      echo "ERROR: $proxy_service could not be created"
-      exit 1
-    fi
-
-    if "$set_enforce_script" && systemctl enable "$proxy_service_file_name" && systemctl start "$proxy_service_file_name"; then
-      echo "Proxy service started"
-
-      selinux_config_path="/etc/selinux"
-      selinux_config="$selinux_config_path/config"
-      selinux_config_backup="$selinux_config_path/config.bak"
-
-      if sestatus | grep -i "disabled" >/dev/null 2>&1; then
-
-        echo "SELinux is already disabled"
-      else
-
-        if test -e "$selinux_config"; then
-
-          if ! test -e "$selinux_config_backup"; then
-
-            echo "$selinux_config: backing up"
-            if ! mv "$selinux_config" "$selinux_config_backup"; then
-
-              echo "ERROR: $selinux_config could not backup"
-              exit 1
-            fi
-          fi
-
-          if echo "SELINUX=disabled" >"$selinux_config" &&
-            echo "SELINUXTYPE=targeted" | tee -a "$selinux_config" >/dev/null 2>&1; then
-
-            echo "SELinux is disabled"
-          else
-
-            echo "ERROR: Could not disable SELinux"
-          fi
-        else
-
-          echo "WARNING: $selinux_config not found"
-        fi
-      fi
-    else
-
-      echo "ERROR: Could not start proxy service"
-      exit 1
-    fi
-  else
-
-    echo "ERROR: $proxy_service proxy service file not saved"
+    echo "ERROR: $config_file could not be removed"
     exit 1
   fi
 fi
 
-# TODO: Move delay if needed
-delay=10 # TODO: Set to: 900
-if [ "$delayed" = "delayed" ]; then
+if cp "$here"/Proxy/"$config_file_name" "$config_file" &&
+  test -e "$config_file" && chmod 640 "$config_file"; then
 
-  delayMsg="Delay set to $delay seconds"
-  sleep 10
+  echo "$config_file: proxy configuration file saved"
 else
 
-  delayMsg="No delay set"
-fi
-echo "$delayMsg"
-
-msg1="Initializing Proxy"
-msg2="Proxy init. parameters (1): (host=$host, port=$port, account=$account, password=$password)"
-msg3="Proxy init. parameters (2): (is_selfSigned_ca=$is_selfSigned_ca, script_root=$script_root)"
-msg4="Proxy init. parameters (3): (certificate_endpoint=$certificate_endpoint, delayed=$delayed)"
-
-echo "$msg1"
-echo "$msg2"
-echo "$msg3"
-echo "$msg4"
-
-date=$(date)
-# shellcheck disable=SC2129
-echo "$date" >>"$log"
-echo "$delayMsg" >>"$log"
-echo "$msg1" >>"$log"
-echo "$msg2" >>"$log"
-echo "$msg3" >>"$log"
-echo "$msg4" >>"$log"
-echo "- - - - - - - - - -" >>"$log"
-
-validate_ip_script="$here/validate_ip_address.sh"
-if ! test -e "$validate_ip_script"; then
-
-  echo "ERROR: $validate_ip_script does not exist"
+  echo "ERROR: $config_file proxy configuration file not saved"
   exit 1
 fi
 
-# shellcheck disable=SC2154
-if ! [ "$proxy_host_ip" = "" ]; then
+if test -e "$proxy_service"; then
 
-  echo "Last known proxy IP: $proxy_host_ip"
+  if ! rm -f "$proxy_service"; then
+
+    echo "ERROR: $proxy_service could not be removed"
+    exit 1
+  fi
 fi
 
-if sh "$validate_ip_script" "$host" >/dev/null 2>&1; then
+if cp "$here"/Proxy/"$proxy_service_file_name" "$proxy_service" &&
+  test -e "$proxy_service" && chmod 640 "$proxy_service"; then
 
-  proxy_ip="$host"
-  echo "Proxy host is IP address: $proxy_ip"
-else
+  echo "$proxy_service: proxy service file saved"
+  if ! test -e "$set_enforce_script"; then
 
-  get_ip_script="$here"/getip.sh
-  if test -e "$get_ip_script"; then
+    echo "ERROR: $set_enforce_script does not exits"
+    exit 1
+  fi
 
-    if sh "$get_ip_script" "$host" >/dev/null 2>&1; then
+  systemd_service="/etc/systemd/system/$proxy_service_file_name"
+  if test -e systemd_service; then
 
-      proxy_ip=$(sh "$get_ip_script" "$host")
-      if [ "$proxy_ip" = "" ]; then
+    echo "$systemd_service already exists, cleaning up"
+    if rm -f "$systemd_service"; then
 
-        echo "ERROR: proxy IP was not obtained successfully"
-        if [ "$proxy_host_ip" = "" ]; then
+      echo "$systemd_service removed"
+    else
 
-          echo "ERROR: Could not obtain proxy IP address (1)"
-          exit 1
+      echo "ERROR: $systemd_service could not be removed"
+      exit 1
+    fi
+  fi
+
+  if cp "$proxy_service" "$systemd_service"; then
+
+    echo "$systemd_service is ready"
+  else
+
+    echo "ERROR: $proxy_service could not be created"
+    exit 1
+  fi
+
+  if "$set_enforce_script" && systemctl enable "$proxy_service_file_name" && systemctl start "$proxy_service_file_name"; then
+    echo "Proxy service started"
+
+    selinux_config_path="/etc/selinux"
+    selinux_config="$selinux_config_path/config"
+    selinux_config_backup="$selinux_config_path/config.bak"
+
+    if sestatus | grep -i "disabled" >/dev/null 2>&1; then
+
+      echo "SELinux is already disabled"
+    else
+
+      if test -e "$selinux_config"; then
+
+        if ! test -e "$selinux_config_backup"; then
+
+          echo "$selinux_config: backing up"
+          if ! mv "$selinux_config" "$selinux_config_backup"; then
+
+            echo "ERROR: $selinux_config could not backup"
+            exit 1
+          fi
+        fi
+
+        if echo "SELINUX=disabled" >"$selinux_config" &&
+          echo "SELINUXTYPE=targeted" | tee -a "$selinux_config" >/dev/null 2>&1; then
+
+          echo "SELinux is disabled"
         else
 
-          proxy_ip="$proxy_host_ip"
-          host="$proxy_ip"
-          echo "Proxy IP (1B): $host"
+          echo "ERROR: Could not disable SELinux"
         fi
       else
 
-        echo "Proxy IP (1): $proxy_ip"
-      fi
-
-      if sh "$validate_ip_script" "$proxy_ip" >/dev/null 2>&1; then
-
-        echo "Proxy IP (2): $proxy_ip"
-        host="$proxy_ip"
-      else
-
-        if [ "$proxy_host_ip" = "" ]; then
-
-          echo "ERROR: Could not obtain proxy IP address (2)"
-          exit 1
-        else
-
-          host="$proxy_host_ip"
-          echo "Proxy IP (2B): $host"
-        fi
-      fi
-    else
-
-      if [ "$proxy_host_ip" = "" ]; then
-
-        echo "ERROR: Could not obtain proxy IP address (3)"
-        exit 1
-      else
-
-        host="$proxy_host_ip"
-        echo "Proxy IP (3B): $host"
+        echo "WARNING: $selinux_config not found"
       fi
     fi
   else
 
-    echo "ERROR: $get_ip_script is unavailable"
+    echo "ERROR: Could not start proxy service"
     exit 1
-  fi
-fi
-
-if ! [ "$certificate_endpoint" = "$empty" ]; then
-
-  if [ -f /etc/os-release ]; then
-
-    # freedesktop.org and systemd
-    . /etc/os-release
-    os=$NAME
-    ver=$VERSION_ID
-  elif type lsb_release >/dev/null 2>&1; then
-
-    # linuxbase.org
-    os=$(lsb_release -si)
-    ver=$(lsb_release -sr)
-  elif [ -f /etc/lsb-release ]; then
-
-    # For some versions of Debian/Ubuntu without lsb_release command
-    . /etc/lsb-release
-    os=$DISTRIB_ID
-    ver=$DISTRIB_RELEASE
-  elif [ -f /etc/debian_version ]; then
-
-    # Older Debian/Ubuntu/etc.
-    os=Debian
-    ver=$(cat /etc/debian_version)
-  elif [ -f /etc/SuSe-release ]; then
-
-    # Older SuSE/etc.
-    echo "Unsupported operating system (1)"
-    exit 1
-  elif [ -f /etc/redhat-release ]; then
-
-    # Older Red Hat, CentOS, etc.
-    echo "Unsupported operating system (2)"
-    exit 1
-  else
-
-    # Fall back to uname, e.g. "Linux <version>", also works for BSD, etc.
-    os=$(uname -s)
-    ver=$(uname -r)
-  fi
-
-  echo "Proxy certificate installation target operating system is: $os $ver"
-  echo "Obtaining proxy certificate from: $certificate_endpoint"
-
-  certificate_home="/usr/local/share/ca-certificates"
-  if echo "$os" | grep -i -E "Fedora|Centos|RedHat" >/dev/null 2>&1; then
-
-    certificate_home="/etc/pki/ca-trust/source/anchors"
-  fi
-
-  certificate_file_name="$host.crt"
-  certificate_file="$certificate_home/$certificate_file_name"
-  if test -e "$certificate_file"; then
-
-    if rm -f "$certificate_file"; then
-
-      echo "Old $certificate_file has been removed"
-    else
-
-      echo "ERROR: $certificate_file could not be removed"
-      exit 1
-    fi
-  fi
-
-  if ! [ "$host_name" = "$proxy_ip" ]; then
-
-    if certificate_endpoint=$(echo "$certificate_endpoint" | sed "s/$host_name/$proxy_ip/1"); then
-
-      echo "Proxy certificate endpoint has been updated to: $certificate_endpoint"
-    else
-
-      echo "ERROR: could not update proxy certificate endpoint: '$host_name' -> '$proxy_ip'"
-      exit 1
-    fi
-  fi
-
-  if wget --no-proxy -O "$certificate_file" "$certificate_endpoint" >/dev/null 2>&1; then
-
-    echo "Proxy certificate saved to: $certificate_file"
-  else
-
-    echo "ERROR: Could not save proxy certificate to: $certificate_file"
-    exit 1
-  fi
-
-  if echo "$os" | grep -i -E "Fedora|Centos|RedHat" >/dev/null 2>&1; then
-
-    if ! update-ca-trust extract >/dev/null 2>&1; then
-
-      echo "Could not update CA trust (1)"
-      exit 1
-    fi
-  else
-
-    if ! update-ca-certificates >/dev/null 2>&1; then
-
-      echo "Could not update CA trust (2)"
-      exit 1
-    fi
-  fi
-fi
-
-if [ "$is_selfSigned_ca" = "true" ]; then
-
-  echo "Proxy is using self-signed certificate"
-  if [ "$certificate_endpoint" = "$empty" ]; then
-
-    wget_rc="/etc/wgetrc"
-    curl_rc="/root/.curlrc"
-    curl_rc_disable_ca_check="insecure"
-    wget_rc_disable_ca_check="check_certificate = off"
-
-    source=$(cat "$curl_rc")
-    if ! echo "$source" | grep -i "$curl_rc_disable_ca_check" >/dev/null 2>&1; then
-
-      echo "Enabling 'Insecure' certificate setting for Curl"
-      if echo "$curl_rc_disable_ca_check" >>"$curl_rc"; then
-
-        echo "Enabled 'Insecure' certificate setting for Curl"
-      else
-
-        echo "ERROR: could not enable 'Insecure' certificate setting for Curl"
-        exit 1
-      fi
-    else
-
-      echo "'Insecure' certificate setting for Curl is already set"
-    fi
-
-    source=$(cat "$wget_rc")
-    if ! echo "$source" | grep -i "$wget_rc_disable_ca_check" >/dev/null 2>&1; then
-
-      echo "Enabling 'Insecure' certificate setting for Wget"
-      if echo "$wget_rc_disable_ca_check" >>"$wget_rc"; then
-
-        echo "Enabled 'Insecure' certificate setting for Wget"
-      else
-
-        echo "ERROR: could not enable 'Insecure' certificate setting for Wget"
-        exit 1
-      fi
-    else
-
-      echo "'Insecure' certificate setting for Wget is already set"
-    fi
-  else
-
-    echo "'Insecure' certificate settings are not needed (1)"
   fi
 else
 
-  echo "'Insecure' certificate settings are not needed (2)"
-fi
-
-cmdStartProxy="apply_proxy.sh"
-startProxyScript="$script_root"/"$cmdStartProxy"
-if echo """
-#!/bin/sh
-
-host=\"$host\"
-port=\"$port\"
-account=\"$account\"
-password=\"$password\"
-
-echo \"Setting up proxy\"
-
-export proxy_host_ip=\"$proxy_ip\"
-export proxy_url=\"\$host:\$port/\"
-
-if ! [ \"\$account\" = \"_empty\" ]; then
-
-  proxy_url=\"\$account:\$password@\$host:\$port/\"
-fi
-
-echo \"Proxy IP is set to: \$proxy_host_ip\"
-echo \"Proxy URL is set to: \$proxy_url\"
-
-export http_proxy=\"\$proxy_url\"
-export https_proxy=\"\$proxy_url\"
-export ftp_proxy=\"\$proxy_url\"
-export no_proxy=\"127.0.0.1,localhost\"
-
-export HTTP_PROXY=\"\$proxy_url\"
-export HTTPS_PROXY=\"\$proxy_url\"
-export FTP_PROXY=\"\$proxy_url\"
-export NO_PROXY=\"127.0.0.1,localhost\"
-""" >"$startProxyScript" && chmod 740 "$startProxyScript"; then
-
-  echo "$startProxyScript has been created"
-else
-
-  echo "ERROR: $startProxyScript has not been created"
+  echo "ERROR: $proxy_service proxy service file not saved"
   exit 1
-fi
-
-etc_profile="/etc/profile"
-profile=$(cat "$etc_profile")
-if ! echo "$profile" | grep -i "$startProxyScript" >/dev/null 2>&1; then
-
-  echo "Installing 'start proxy' script"
-  if echo """
-
-source $startProxyScript
-  """ >>"$etc_profile"; then
-
-    echo "'start proxy' script has been installed"
-  else
-
-    echo "ERROR: 'start proxy' script has not been installed"
-    exit 1
-  fi
-else
-
-  echo "'start proxy' script is already installed"
 fi
 
 # TODO: Remove:
