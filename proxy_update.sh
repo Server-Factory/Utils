@@ -5,7 +5,7 @@ while true; do
   date_time=$(date)
   here=$(dirname "$0")
   working_directory="$1"
-  log="$working_directory"/proxy_update.log
+  log="$working_directory"/proxy.log
   config_file="$working_directory"/proxy.cfg
 
   echo "$date_time" >"$log"
