@@ -57,40 +57,32 @@ while true; do
   msg1="Initializing Proxy"
   msg2="Proxy init. parameters (1): (host=$host, port=$port, account=$account, password=$password)"
   # shellcheck disable=SC2154,SC2129
-  msg3="Proxy init. parameters (2): (is_selfSigned_ca=$is_selfSigned_ca, script_root=$script_root)"
+  msg3="Proxy init. parameters (2): (is_selfSigned_ca=$is_selfSigned_ca, working_directory=$working_directory)"
   msg4="Proxy init. parameters (3): (certificate_endpoint=$certificate_endpoint)"
 
-  echo "$msg1"
-  echo "$msg2"
-  echo "$msg3"
-  echo "$msg4"
-
-  date=$(date)
   # shellcheck disable=SC2129
-  echo "$date" >>"$log"
   echo "$msg1" >>"$log"
   echo "$msg2" >>"$log"
   echo "$msg3" >>"$log"
   echo "$msg4" >>"$log"
-  echo "- - - - - - - - - -" >>"$log"
 
   validate_ip_script="$here/validate_ip_address.sh"
   if ! test -e "$validate_ip_script"; then
 
-    echo "ERROR: $validate_ip_script does not exist"
+    echo "ERROR: $validate_ip_script does not exist">>"$log"
     exit 1
   fi
 
   # shellcheck disable=SC2154
   if ! [ "$proxy_host_ip" = "" ]; then
 
-    echo "Last known proxy IP: $proxy_host_ip"
+    echo "Last known proxy IP: $proxy_host_ip">>"$log"
   fi
 
   if sh "$validate_ip_script" "$host" >/dev/null 2>&1; then
 
     proxy_ip="$host"
-    echo "Proxy host is IP address: $proxy_ip"
+    echo "Proxy host is IP address: $proxy_ip">>"$log"
   else
 
     get_ip_script="$here"/getip.sh
@@ -101,53 +93,53 @@ while true; do
         proxy_ip=$(sh "$get_ip_script" "$host")
         if [ "$proxy_ip" = "" ]; then
 
-          echo "ERROR: proxy IP was not obtained successfully"
+          echo "ERROR: proxy IP was not obtained successfully">>"$log"
           if [ "$proxy_host_ip" = "" ]; then
 
-            echo "ERROR: Could not obtain proxy IP address (1)"
+            echo "ERROR: Could not obtain proxy IP address (1)">>"$log"
             exit 1
           else
 
             proxy_ip="$proxy_host_ip"
             host="$proxy_ip"
-            echo "Proxy IP (1B): $host"
+            echo "Proxy IP (1B): $host">>"$log"
           fi
         else
 
-          echo "Proxy IP (1): $proxy_ip"
+          echo "Proxy IP (1): $proxy_ip">>"$log"
         fi
 
         if sh "$validate_ip_script" "$proxy_ip" >/dev/null 2>&1; then
 
-          echo "Proxy IP (2): $proxy_ip"
+          echo "Proxy IP (2): $proxy_ip">>"$log"
           host="$proxy_ip"
         else
 
           if [ "$proxy_host_ip" = "" ]; then
 
-            echo "ERROR: Could not obtain proxy IP address (2)"
+            echo "ERROR: Could not obtain proxy IP address (2)">>"$log"
             exit 1
           else
 
             host="$proxy_host_ip"
-            echo "Proxy IP (2B): $host"
+            echo "Proxy IP (2B): $host">>"$log"
           fi
         fi
       else
 
         if [ "$proxy_host_ip" = "" ]; then
 
-          echo "ERROR: Could not obtain proxy IP address (3)"
+          echo "ERROR: Could not obtain proxy IP address (3)">>"$log"
           exit 1
         else
 
           host="$proxy_host_ip"
-          echo "Proxy IP (3B): $host"
+          echo "Proxy IP (3B): $host">>"$log"
         fi
       fi
     else
 
-      echo "ERROR: $get_ip_script is unavailable"
+      echo "ERROR: $get_ip_script is unavailable">>"$log"
       exit 1
     fi
   fi
@@ -179,12 +171,12 @@ while true; do
     elif [ -f /etc/SuSe-release ]; then
 
       # Older SuSE/etc.
-      echo "Unsupported operating system (1)"
+      echo "Unsupported operating system (1)">>"$log"
       exit 1
     elif [ -f /etc/redhat-release ]; then
 
       # Older Red Hat, CentOS, etc.
-      echo "Unsupported operating system (2)"
+      echo "Unsupported operating system (2)">>"$log"
       exit 1
     else
 
@@ -193,8 +185,8 @@ while true; do
       ver=$(uname -r)
     fi
 
-    echo "Proxy certificate installation target operating system is: $os $ver"
-    echo "Obtaining proxy certificate from: $certificate_endpoint"
+    echo "Proxy certificate installation target operating system is: $os $ver">>"$log"
+    echo "Obtaining proxy certificate from: $certificate_endpoint">>"$log"
 
     certificate_home="/usr/local/share/ca-certificates"
     if echo "$os" | grep -i -E "Fedora|Centos|RedHat" >/dev/null 2>&1; then
@@ -208,10 +200,10 @@ while true; do
 
       if rm -f "$certificate_file"; then
 
-        echo "Old $certificate_file has been removed"
+        echo "Old $certificate_file has been removed">>"$log"
       else
 
-        echo "ERROR: $certificate_file could not be removed"
+        echo "ERROR: $certificate_file could not be removed">>"$log"
         exit 1
       fi
     fi
@@ -220,20 +212,20 @@ while true; do
 
       if certificate_endpoint=$(echo "$certificate_endpoint" | sed "s/$host_name/$proxy_ip/1"); then
 
-        echo "Proxy certificate endpoint has been updated to: $certificate_endpoint"
+        echo "Proxy certificate endpoint has been updated to: $certificate_endpoint">>"$log"
       else
 
-        echo "ERROR: could not update proxy certificate endpoint: '$host_name' -> '$proxy_ip'"
+        echo "ERROR: could not update proxy certificate endpoint: '$host_name' -> '$proxy_ip'">>"$log"
         exit 1
       fi
     fi
 
     if wget --no-proxy -O "$certificate_file" "$certificate_endpoint" >/dev/null 2>&1; then
 
-      echo "Proxy certificate saved to: $certificate_file"
+      echo "Proxy certificate saved to: $certificate_file">>"$log"
     else
 
-      echo "ERROR: Could not save proxy certificate to: $certificate_file"
+      echo "ERROR: Could not save proxy certificate to: $certificate_file">>"$log"
       exit 1
     fi
 
@@ -241,14 +233,14 @@ while true; do
 
       if ! update-ca-trust extract >/dev/null 2>&1; then
 
-        echo "Could not update CA trust (1)"
+        echo "Could not update CA trust (1)">>"$log"
         exit 1
       fi
     else
 
       if ! update-ca-certificates >/dev/null 2>&1; then
 
-        echo "Could not update CA trust (2)"
+        echo "Could not update CA trust (2)">>"$log"
         exit 1
       fi
     fi
@@ -256,7 +248,7 @@ while true; do
 
   if [ "$is_selfSigned_ca" = "true" ]; then
 
-    echo "Proxy is using self-signed certificate"
+    echo "Proxy is using self-signed certificate">>"$log"
     if [ "$certificate_endpoint" = "" ]; then
 
       wget_rc="/etc/wgetrc"
@@ -267,47 +259,47 @@ while true; do
       source=$(cat "$curl_rc")
       if ! echo "$source" | grep -i "$curl_rc_disable_ca_check" >/dev/null 2>&1; then
 
-        echo "Enabling 'Insecure' certificate setting for Curl"
+        echo "Enabling 'Insecure' certificate setting for Curl">>"$log"
         if echo "$curl_rc_disable_ca_check" >>"$curl_rc"; then
 
-          echo "Enabled 'Insecure' certificate setting for Curl"
+          echo "Enabled 'Insecure' certificate setting for Curl">>"$log"
         else
 
-          echo "ERROR: could not enable 'Insecure' certificate setting for Curl"
+          echo "ERROR: could not enable 'Insecure' certificate setting for Curl">>"$log"
           exit 1
         fi
       else
 
-        echo "'Insecure' certificate setting for Curl is already set"
+        echo "'Insecure' certificate setting for Curl is already set">>"$log"
       fi
 
       source=$(cat "$wget_rc")
       if ! echo "$source" | grep -i "$wget_rc_disable_ca_check" >/dev/null 2>&1; then
 
-        echo "Enabling 'Insecure' certificate setting for Wget"
+        echo "Enabling 'Insecure' certificate setting for Wget">>"$log"
         if echo "$wget_rc_disable_ca_check" >>"$wget_rc"; then
 
-          echo "Enabled 'Insecure' certificate setting for Wget"
+          echo "Enabled 'Insecure' certificate setting for Wget">>"$log"
         else
 
-          echo "ERROR: could not enable 'Insecure' certificate setting for Wget"
+          echo "ERROR: could not enable 'Insecure' certificate setting for Wget">>"$log"
           exit 1
         fi
       else
 
-        echo "'Insecure' certificate setting for Wget is already set"
+        echo "'Insecure' certificate setting for Wget is already set">>"$log"
       fi
     else
 
-      echo "'Insecure' certificate settings are not needed (1)"
+      echo "'Insecure' certificate settings are not needed (1)">>"$log"
     fi
   else
 
-    echo "'Insecure' certificate settings are not needed (2)"
+    echo "'Insecure' certificate settings are not needed (2)">>"$log"
   fi
 
   cmdStartProxy="apply_proxy.sh"
-  startProxyScript="$script_root"/"$cmdStartProxy"
+  startProxyScript="$working_directory"/"$cmdStartProxy"
   if echo """
   #!/bin/sh
 
@@ -340,10 +332,10 @@ while true; do
   export NO_PROXY=\"127.0.0.1,localhost\"
   """ >"$startProxyScript" && chmod 740 "$startProxyScript"; then
 
-    echo "$startProxyScript has been created"
+    echo "$startProxyScript has been created">>"$log"
   else
 
-    echo "ERROR: $startProxyScript has not been created"
+    echo "ERROR: $startProxyScript has not been created">>"$log"
     exit 1
   fi
 
@@ -351,21 +343,21 @@ while true; do
   profile=$(cat "$etc_profile")
   if ! echo "$profile" | grep -i "$startProxyScript" >/dev/null 2>&1; then
 
-    echo "Installing 'start proxy' script"
+    echo "Installing 'start proxy' script">>"$log"
     if echo """
 
   source $startProxyScript
     """ >>"$etc_profile"; then
 
-      echo "'start proxy' script has been installed"
+      echo "'start proxy' script has been installed">>"$log"
     else
 
-      echo "ERROR: 'start proxy' script has not been installed"
+      echo "ERROR: 'start proxy' script has not been installed">>"$log"
       exit 1
     fi
   else
 
-    echo "'start proxy' script is already installed"
+    echo "'start proxy' script is already installed">>"$log"
   fi
 
   echo "$date_time" >>"$log"
