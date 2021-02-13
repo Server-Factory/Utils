@@ -93,7 +93,7 @@ while true; do
         proxy_ip=$(sh "$get_ip_script" "$host")
         if [ "$proxy_ip" = "" ]; then
 
-          echo "ERROR: proxy IP was not obtained successfully">>"$log"
+          echo "ERROR: Proxy IP was not obtained successfully, ip value: '$proxy_host_ip'">>"$log"
           if [ "$proxy_host_ip" = "" ]; then
 
             echo "ERROR: Could not obtain proxy IP address (1)">>"$log"
