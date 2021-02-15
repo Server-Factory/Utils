@@ -70,8 +70,18 @@ if cp "$here"/Proxy/"$proxy_service_file_name" "$proxy_service" &&
     exit 1
   fi
 
-  if "$set_enforce_script" && systemctl enable "$proxy_service_file_name" && systemctl start "$proxy_service_file_name"; then
-    echo "Proxy service started"
+  if "$set_enforce_script" &&
+    systemctl enable "$proxy_service_file_name" &&
+    systemctl start "$proxy_service_file_name"; then
+
+    if systemctl status "$proxy_service_file_name" | grep running; then
+
+      echo "Proxy service started"
+    else
+
+      echo "ERROR: Proxy service is not running"
+      exit 1
+    fi
 
     selinux_config_path="/etc/selinux"
     selinux_config="$selinux_config_path/config"
