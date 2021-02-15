@@ -74,7 +74,7 @@ if cp "$here"/Proxy/"$proxy_service_file_name" "$proxy_service" &&
     systemctl enable "$proxy_service_file_name" &&
     systemctl start "$proxy_service_file_name"; then
 
-    if systemctl status "$proxy_service_file_name" | grep running; then
+    if systemctl status "$proxy_service_file_name" | grep running >/dev/null 2>&1; then
 
       echo "Proxy service started"
     else
