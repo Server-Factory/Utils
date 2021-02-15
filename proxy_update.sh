@@ -1,6 +1,8 @@
 #!/bin/sh
 
 while true; do
+  # FIXME: If iteration fails, whole service fails
+  # FIXME: If fails on 1st iteration, it is registered as success for the service status
 
   date_time=$(date)
   here=$(dirname "$0")
