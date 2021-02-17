@@ -18,7 +18,7 @@ if test -e "$config_file"; then
   fi
 fi
 
-if cp "$here"/Proxy/"$config_file_name" "$config_file" &&
+if mv "$here"/Proxy/"$config_file_name" "$config_file" &&
   test -e "$config_file" && chmod 640 "$config_file"; then
 
   echo "$config_file: proxy configuration file saved"
@@ -37,7 +37,7 @@ if test -e "$proxy_service"; then
   fi
 fi
 
-if cp "$here"/Proxy/"$proxy_service_file_name" "$proxy_service" &&
+if mv "$here"/Proxy/"$proxy_service_file_name" "$proxy_service" &&
   test -e "$proxy_service" && chmod 640 "$proxy_service"; then
 
   echo "$proxy_service: proxy service file saved"
