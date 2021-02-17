@@ -23,7 +23,7 @@ if test -e "$iso_location_settings"; then
         fi
       else
 
-        echo "ERROR: $iso_location_settings not available, please create sync. script and try again"
+        echo "ERROR: $iso_sync_script not available, please create sync. script and try again"
         exit 1
       fi
   fi
