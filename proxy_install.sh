@@ -1,13 +1,19 @@
 #!/bin/sh
 
-script_root="$6"
 here=$(dirname "$0")
+working_directory="$1"
+
 config_file_name="proxy.cfg"
 set_enforce_script_name="setenforce.sh"
 proxy_service_file_name="proxy.service"
-config_file="$script_root/$config_file_name"
+proxy_update_script_name="proxy_update_execute.sh"
+load_configuration_script_name="proxy_load_configuration.sh"
+
+proxy_update="$here/$proxy_update_script_name"
+config_file="$working_directory/$config_file_name"
 set_enforce_script="$here/$set_enforce_script_name"
-proxy_service="$script_root/$proxy_service_file_name"
+proxy_service="$working_directory/$proxy_service_file_name"
+load_configuration_script="$here/$load_configuration_script_name"
 
 if test -e "$config_file"; then
 
@@ -25,6 +31,34 @@ if mv "$here"/Proxy/"$config_file_name" "$config_file" &&
 else
 
   echo "ERROR: $config_file proxy configuration file not saved"
+  exit 1
+fi
+
+if ! test -e "$proxy_update"; then
+
+  echo "ERROR: $proxy_update does not exist"
+  exit 1
+fi
+
+if ! test -e "$load_configuration_script"; then
+
+  echo "ERROR: $load_configuration_script does not exist"
+  exit 1
+fi
+
+# shellcheck disable=SC1090,SC2039
+source "$load_configuration_script" "$config_file"
+
+echo "Initializing Proxy for the first time"
+# shellcheck disable=SC2154,SC2129
+if ! sh "$proxy_update" "$working_directory" "$host" "$port" "$account" "$password" \
+  "$is_selfSigned_ca" "$certificate_endpoint"; then
+
+  echo "ERROR: Could not initialize proxy for the first time"
+  if test "$here"/Proxy/"$proxy_service_file_name"; then
+
+    rm -f "$here"/Proxy/"$proxy_service_file_name"
+  fi
   exit 1
 fi
 
