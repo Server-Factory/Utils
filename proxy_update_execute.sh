@@ -14,8 +14,6 @@ log="$8"
 
 host_name="$host"
 
-echo "$date_time" >"$log"
-
 msg1="Initializing Proxy"
 msg2="Proxy init. parameters (1): (host=$host, port=$port, account=$account, password=$password)"
 msg3="Proxy init. parameters (2): (is_selfSigned_ca=$is_selfSigned_ca, working_directory=$working_directory)"

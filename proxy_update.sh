@@ -11,6 +11,8 @@ while true; do
   log_file_name="proxy.log"
   log="/var/log/$log_file_name"
 
+  echo "Working directory: $working_directory" >"$log"
+
   if ! test -e "$load_configuration_script"; then
 
     echo "ERROR: $load_configuration_script does not exist" >>"$log"
