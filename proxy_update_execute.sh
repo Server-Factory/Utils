@@ -10,7 +10,9 @@ account="$4"
 password="$5"
 is_selfSigned_ca="$6"
 certificate_endpoint="$7"
-log="$8"
+
+# log="$8" FIXME
+log="/var/log/proxy.log"
 
 host_name="$host"
 
