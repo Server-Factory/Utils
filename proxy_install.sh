@@ -9,6 +9,9 @@ proxy_service_file_name="proxy.service"
 proxy_update_script_name="proxy_update_execute.sh"
 load_configuration_script_name="proxy_load_configuration.sh"
 
+log_file_name="proxy.init.log"
+log="/var/log/$log_file_name"
+
 proxy_update="$here/$proxy_update_script_name"
 config_file="$working_directory/$config_file_name"
 set_enforce_script="$here/$set_enforce_script_name"
@@ -49,10 +52,22 @@ fi
 # shellcheck disable=SC1090,SC2039
 source "$load_configuration_script" "$config_file"
 
-echo "Initializing Proxy for the first time"
+msg1="Initializing Proxy for the first time"
+# shellcheck disable=SC2154
+msg2="Proxy init. parameters (1): (host=$host, port=$port, account=$account, password=$password)"
+# shellcheck disable=SC2154
+msg3="Proxy init. parameters (2): (is_selfSigned_ca=$is_selfSigned_ca, working_directory=$working_directory)"
+# shellcheck disable=SC2154
+msg4="Proxy init. parameters (3): (certificate_endpoint=$certificate_endpoint)"
+
+echo "$msg1"
+echo "$msg2"
+echo "$msg3"
+echo "$msg4"
+
 # shellcheck disable=SC2154,SC2129
 if ! sh "$proxy_update" "$working_directory" "$host" "$port" "$account" "$password" \
-  "$is_selfSigned_ca" "$certificate_endpoint"; then
+  "$is_selfSigned_ca" "$certificate_endpoint" "$log"; then
 
   echo "ERROR: Could not initialize proxy for the first time"
   if test "$here"/Proxy/"$proxy_service_file_name"; then

@@ -3,23 +3,23 @@
 date_time=$(date)
 here=$(dirname "$0")
 
+working_directory="$1"
 host="$2"
 port="$3"
 account="$4"
 password="$5"
 is_selfSigned_ca="$6"
-working_directory="$1"
 certificate_endpoint="$7"
+log="$8"
 
 host_name="$host"
-log="$working_directory"/proxy.log
 
 echo "$date_time" >"$log"
 
 msg1="Initializing Proxy"
 msg2="Proxy init. parameters (1): (host=$host, port=$port, account=$account, password=$password)"
 msg3="Proxy init. parameters (2): (is_selfSigned_ca=$is_selfSigned_ca, working_directory=$working_directory)"
-msg4="Proxy init. parameters (3): (certificate_endpoint=$certificate_endpoint)"
+msg4="Proxy init. parameters (3): (certificate_endpoint=$certificate_endpoint, log=$log)"
 
 # shellcheck disable=SC2129
 echo "$msg1" >>"$log"
