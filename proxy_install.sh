@@ -6,16 +6,13 @@ working_directory="$1"
 config_file_name="proxy.cfg"
 set_enforce_script_name="setenforce.sh"
 proxy_service_file_name="proxy.service"
-proxy_update_script_name="proxy_update_execute.sh"
+proxy_update_execute_script_name="proxy_update_execute.sh"
 load_configuration_script_name="proxy_load_configuration.sh"
 
-log_file_name="proxy.init.log"
-log="/var/log/$log_file_name"
-
-proxy_update="$here/$proxy_update_script_name"
 config_file="$working_directory/$config_file_name"
 set_enforce_script="$here/$set_enforce_script_name"
 proxy_service="$working_directory/$proxy_service_file_name"
+proxy_update_execute="$here/$proxy_update_execute_script_name"
 load_configuration_script="$here/$load_configuration_script_name"
 
 if test -e "$config_file"; then
@@ -37,12 +34,6 @@ else
   exit 1
 fi
 
-if ! test -e "$proxy_update"; then
-
-  echo "ERROR: $proxy_update does not exist"
-  exit 1
-fi
-
 if ! test -e "$load_configuration_script"; then
 
   echo "ERROR: $load_configuration_script does not exist"
@@ -50,7 +41,8 @@ if ! test -e "$load_configuration_script"; then
 fi
 
 # shellcheck disable=SC1090,SC2039
-source "$load_configuration_script" "$config_file"
+source "$load_configuration_script"
+load_configuration "$config_file"
 
 msg1="Initializing Proxy for the first time"
 # shellcheck disable=SC2154
@@ -58,16 +50,35 @@ msg2="Proxy init. parameters (1): (host=$host, port=$port, account=$account, pas
 # shellcheck disable=SC2154
 msg3="Proxy init. parameters (2): (is_selfSigned_ca=$is_selfSigned_ca, working_directory=$working_directory)"
 # shellcheck disable=SC2154
-msg4="Proxy init. parameters (3): (certificate_endpoint=$certificate_endpoint)"
+msg4="Proxy init. parameters (3): (certificate_endpoint=$certificate_endpoint, log=$log)"
 
 echo "$msg1"
 echo "$msg2"
 echo "$msg3"
 echo "$msg4"
 
+if test -e "$log"; then
+
+  if rm -f "$log"; then
+
+    echo "$log: has been removed"
+  else
+
+    echo "WARNING: $log has not been removed"
+  fi
+fi
+
+if ! test -e "$proxy_update_execute"; then
+
+  echo "ERROR: $proxy_update_execute does not exist"
+  exit 1
+fi
+
 # shellcheck disable=SC2154,SC2129
-if ! sh "$proxy_update" "$working_directory" "$host" "$port" "$account" "$password" \
-  "$is_selfSigned_ca" "$certificate_endpoint" "$log"; then
+if sh "$proxy_update_execute" "$working_directory" "$host" "$port" "$account" "$password" "$is_selfSigned_ca" "$certificate_endpoint" "$log"; then
+
+  echo "Proxy has been initialized for the first time"
+else
 
   echo "ERROR: Could not initialize proxy for the first time"
   if test "$here"/Proxy/"$proxy_service_file_name"; then
@@ -119,7 +130,7 @@ if mv "$here"/Proxy/"$proxy_service_file_name" "$proxy_service" &&
     exit 1
   fi
 
-  if "$set_enforce_script" &&
+  if "$set_enforce_script" >/dev/null 2>&1 &&
     systemctl enable "$proxy_service_file_name" &&
     systemctl start "$proxy_service_file_name"; then
 

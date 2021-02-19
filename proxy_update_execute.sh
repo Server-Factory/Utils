@@ -1,8 +1,5 @@
 #!/bin/sh
 
-date_time=$(date)
-here=$(dirname "$0")
-
 working_directory="$1"
 host="$2"
 port="$3"
@@ -10,11 +7,11 @@ account="$4"
 password="$5"
 is_selfSigned_ca="$6"
 certificate_endpoint="$7"
+log="$8"
 
-# log="$8" FIXME
-log="/var/log/proxy.log"
-
+date_time=$(date)
 host_name="$host"
+here=$(dirname "$0")
 
 msg1="Initializing Proxy"
 msg2="Proxy init. parameters (1): (host=$host, port=$port, account=$account, password=$password)"

@@ -1,27 +1,36 @@
 #!/bin/sh
 
-config_file="$1"
+load_configuration() {
 
-if ! test -e "$config_file"; then
+  # shellcheck disable=SC2039
+  local config_file="$1"
 
-  echo "ERROR: $config_file does not exist"
-  exit 1
-fi
+  if ! test -e "$config_file"; then
 
-while read -r line; do
+    echo "ERROR: $config_file does not exist"
+    exit 1
+  fi
 
-  export IFS="="
-  parameter_name=""
-  for parameter in $line; do
+  echo "Loading configuration: $config_file"
 
-    if [ "$parameter_name" = "" ]; then
+  # shellcheck disable=SC2039
+  local line=""
+  while read -r line; do
 
-      parameter_name="$parameter"
-    else
+    export IFS="="
+    # shellcheck disable=SC2039
+    local parameter_name=""
+    for parameter in $line; do
 
-      eval "$parameter_name"="$parameter"
-      # shellcheck disable=SC2163
-      export "$parameter_name"
-    fi
-  done
-done <"$config_file"
+      if [ "$parameter_name" = "" ]; then
+
+        parameter_name="$parameter"
+      else
+
+        eval "$parameter_name"="$parameter"
+      fi
+    done
+  done <"$config_file"
+
+  echo "Configuration loaded: $config_file"
+}
