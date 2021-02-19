@@ -75,7 +75,8 @@ if ! test -e "$proxy_update_execute"; then
 fi
 
 # shellcheck disable=SC2154,SC2129
-if sh "$proxy_update_execute" "$working_directory" "$host" "$port" "$account" "$password" "$is_selfSigned_ca" "$certificate_endpoint" "$log"; then
+if sh "$proxy_update_execute" "$working_directory" "$host" "$port" \
+  "$account" "$password" "$is_selfSigned_ca" "$certificate_endpoint" "$log"; then
 
   echo "Proxy has been initialized for the first time"
 else
