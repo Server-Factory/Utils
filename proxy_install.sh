@@ -50,7 +50,7 @@ msg2="Proxy init. parameters (1): (host=$host, port=$port, account=$account, pas
 # shellcheck disable=SC2154
 msg3="Proxy init. parameters (2): (is_selfSigned_ca=$is_selfSigned_ca, working_directory=$working_directory)"
 # shellcheck disable=SC2154
-msg4="Proxy init. parameters (3): (certificate_endpoint=$certificate_endpoint, log=$log)"
+msg4="Proxy init. parameters (3): (certificate_endpoint=$certificate_endpoint, frequency=$frequency, log=$log)"
 
 echo "$msg1"
 echo "$msg2"
