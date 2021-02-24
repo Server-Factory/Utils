@@ -104,66 +104,11 @@ fi
 
 if ! [ "$certificate_endpoint" = "" ]; then
 
-  if [ -f /etc/os-release ]; then
+  install_certificate_script="$here/install_certificate.sh"
+  if ! test -e "$install_certificate_script"; then
 
-    # freedesktop.org and systemd
-    . /etc/os-release
-    os=$NAME
-    ver=$VERSION_ID
-  elif type lsb_release >/dev/null 2>&1; then
-
-    # linuxbase.org
-    os=$(lsb_release -si)
-    ver=$(lsb_release -sr)
-  elif [ -f /etc/lsb-release ]; then
-
-    # For some versions of Debian/Ubuntu without lsb_release command
-    . /etc/lsb-release
-    os=$DISTRIB_ID
-    ver=$DISTRIB_RELEASE
-  elif [ -f /etc/debian_version ]; then
-
-    # Older Debian/Ubuntu/etc.
-    os=Debian
-    ver=$(cat /etc/debian_version)
-  elif [ -f /etc/SuSe-release ]; then
-
-    # Older SuSE/etc.
-    echo "Unsupported operating system (1)" >>"$log"
+    echo "ERROR: $install_certificate_script does not exist" >>"$log"
     exit 1
-  elif [ -f /etc/redhat-release ]; then
-
-    # Older Red Hat, CentOS, etc.
-    echo "Unsupported operating system (2)" >>"$log"
-    exit 1
-  else
-
-    # Fall back to uname, e.g. "Linux <version>", also works for BSD, etc.
-    os=$(uname -s)
-    ver=$(uname -r)
-  fi
-
-  echo "Proxy certificate installation target operating system is: $os $ver" >>"$log"
-  echo "Obtaining proxy certificate from: $certificate_endpoint" >>"$log"
-
-  certificate_home="/usr/local/share/ca-certificates"
-  if echo "$os" | grep -i -E "Fedora|Centos|RedHat" >/dev/null 2>&1; then
-
-    certificate_home="/etc/pki/ca-trust/source/anchors"
-  fi
-
-  certificate_file_name="$host.crt"
-  certificate_file="$certificate_home/$certificate_file_name"
-  if test -e "$certificate_file"; then
-
-    if rm -f "$certificate_file"; then
-
-      echo "Old $certificate_file has been removed" >>"$log"
-    else
-
-      echo "ERROR: $certificate_file could not be removed" >>"$log"
-      exit 1
-    fi
   fi
 
   if ! [ "$host_name" = "$proxy_ip" ]; then
@@ -178,33 +123,12 @@ if ! [ "$certificate_endpoint" = "" ]; then
     fi
   fi
 
-  echo "Downloading certificate: $certificate_endpoint" >>"$log"
-  if wget --no-proxy -O "$certificate_file" "$certificate_endpoint" >/dev/null 2>&1; then
-
-    echo "Proxy certificate saved to: $certificate_file" >>"$log"
-  else
-
-    echo "ERROR: Could not save proxy certificate to: $certificate_file" >>"$log"
-    exit 1
-  fi
-
-  if echo "$os" | grep -i -E "Fedora|Centos|RedHat" >/dev/null 2>&1; then
-
-    if ! update-ca-trust extract >/dev/null 2>&1; then
-
-      echo "Could not update CA trust (1)" >>"$log"
-      exit 1
-    fi
-  else
-
-    if ! update-ca-certificates >/dev/null 2>&1; then
-
-      echo "Could not update CA trust (2)" >>"$log"
-      exit 1
-    fi
-  fi
+  # shellcheck disable=SC2039,SC1090
+  source "$install_certificate_script"
+  install_certificate "$host" "$certificate_endpoint" >>"$log"
 fi
 
+# TODO: Move into separate script same as we did for: install_certificate.sh
 if [ "$is_selfSigned_ca" = "true" ]; then
 
   echo "Proxy is using self-signed certificate" >>"$log"
