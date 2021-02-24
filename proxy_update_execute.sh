@@ -242,5 +242,3 @@ else
 
   echo "'start proxy' script is already installed" >>"$log"
 fi
-
-printf "%s\n\n" "$date_time" >>"$log"
