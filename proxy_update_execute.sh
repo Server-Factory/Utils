@@ -128,50 +128,21 @@ if ! [ "$certificate_endpoint" = "" ]; then
   install_certificate "$host" "$certificate_endpoint" >>"$log"
 fi
 
-# TODO: Move into separate script same as we did for: install_certificate.sh
 if [ "$is_selfSigned_ca" = "true" ]; then
 
   echo "Proxy is using self-signed certificate" >>"$log"
   if [ "$certificate_endpoint" = "" ]; then
 
-    wget_rc="/etc/wgetrc"
-    curl_rc="/root/.curlrc"
-    curl_rc_disable_ca_check="insecure"
-    wget_rc_disable_ca_check="check_certificate = off"
+    enable_insecure_script="$here/enable_curl_wget_insecure.sh"
+    if ! test -e "$enable_insecure_script"; then
 
-    source=$(cat "$curl_rc")
-    if ! echo "$source" | grep -i "$curl_rc_disable_ca_check" >/dev/null 2>&1; then
-
-      echo "Enabling 'Insecure' certificate setting for Curl" >>"$log"
-      if echo "$curl_rc_disable_ca_check" >>"$curl_rc"; then
-
-        echo "Enabled 'Insecure' certificate setting for Curl" >>"$log"
-      else
-
-        echo "ERROR: could not enable 'Insecure' certificate setting for Curl" >>"$log"
-        exit 1
-      fi
-    else
-
-      echo "'Insecure' certificate setting for Curl is already set" >>"$log"
+      echo "ERROR: $enable_insecure_script does not exist" >>"$log"
+      exit 1
     fi
 
-    source=$(cat "$wget_rc")
-    if ! echo "$source" | grep -i "$wget_rc_disable_ca_check" >/dev/null 2>&1; then
-
-      echo "Enabling 'Insecure' certificate setting for Wget" >>"$log"
-      if echo "$wget_rc_disable_ca_check" >>"$wget_rc"; then
-
-        echo "Enabled 'Insecure' certificate setting for Wget" >>"$log"
-      else
-
-        echo "ERROR: could not enable 'Insecure' certificate setting for Wget" >>"$log"
-        exit 1
-      fi
-    else
-
-      echo "'Insecure' certificate setting for Wget is already set" >>"$log"
-    fi
+    # shellcheck disable=SC2039,SC1090
+    source "$enable_insecure_script"
+    enable_insecure >>"$log"
   else
 
     echo "'Insecure' certificate settings are not needed (1)" >>"$log"
