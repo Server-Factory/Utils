@@ -237,6 +237,8 @@ else
   fi
 fi
 
+# TODO: Provide deployed proxy.cfg to every Docker container, update bash scripts to use it
+
 # TODO: Remove:
 echo "WORK IN PROGRESS"
 exit 1
