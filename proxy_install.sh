@@ -6,14 +6,16 @@ working_directory="$1"
 config_file_name="proxy.cfg"
 set_enforce_script_name="setenforce.sh"
 proxy_service_file_name="proxy.service"
+proxy_update_docker_script_name="proxy_update_docker.sh"
 proxy_update_execute_script_name="proxy_update_execute.sh"
 load_configuration_script_name="proxy_load_configuration.sh"
 
 config_file="$working_directory/$config_file_name"
 set_enforce_script="$here/$set_enforce_script_name"
 proxy_service="$working_directory/$proxy_service_file_name"
-proxy_update_execute="$here/$proxy_update_execute_script_name"
 load_configuration_script="$here/$load_configuration_script_name"
+proxy_update_docker_script="$here/$proxy_update_docker_script_name"
+proxy_update_execute_script="$here/$proxy_update_execute_script_name"
 
 if test -e "$config_file"; then
 
@@ -52,7 +54,7 @@ msg3="Proxy init. parameters (2): (is_selfSigned_ca=$is_selfSigned_ca, working_d
 # shellcheck disable=SC2154
 msg4="Proxy init. parameters (3): (certificate_endpoint=$certificate_endpoint, frequency=$frequency, log=$log)"
 # shellcheck disable=SC2154
-msg5="Proxy init. parameters (3): (is_factory_service=$FACTORY_SERVICE)"
+msg5="Proxy init. parameters (4): (home=$home, is_factory_service=$FACTORY_SERVICE)"
 
 echo "$msg1"
 echo "$msg2"
@@ -71,9 +73,9 @@ if test -e "$log"; then
   fi
 fi
 
-if ! test -e "$proxy_update_execute"; then
+if ! test -e "$proxy_update_execute_script"; then
 
-  echo "ERROR: $proxy_update_execute does not exist"
+  echo "ERROR: $proxy_update_execute_script does not exist"
   exit 1
 fi
 
@@ -87,7 +89,7 @@ fi
 if [ -z "$FACTORY_SERVICE" ] || sh "$validate_ip_script" "$host" >/dev/null 2>&1; then
 
   # shellcheck disable=SC2154,SC2129
-  if sh "$proxy_update_execute" "$working_directory" "$host" "$port" \
+  if sh "$proxy_update_execute_script" "$working_directory" "$host" "$port" \
     "$account" "$password" "$is_selfSigned_ca" "$certificate_endpoint" "$log"; then
 
     echo "Proxy has been initialized for the first time"
@@ -116,7 +118,7 @@ if test -e systemd_service; then
 
   echo "$systemd_service already exists, cleaning up"
 
-  if systemctl stop $proxy_service_file_name && \
+  if systemctl stop $proxy_service_file_name &&
     systemctl disable $proxy_service_file_name >/dev/null 2>&1; then
 
     echo "$systemd_service stopped and disabled"
@@ -137,10 +139,9 @@ if sh "$validate_ip_script" "$host" >/dev/null 2>&1; then
   echo "Proxy host is IP address: $host"
 else
 
-  if [ -z "$FACTORY_SERVICE" ] ; then
+  if [ -z "$FACTORY_SERVICE" ]; then
 
     if mv "$here"/Proxy/"$proxy_service_file_name" "$proxy_service" &&
-
       test -e "$proxy_service" && chmod 640 "$proxy_service"; then
 
       echo "$proxy_service: proxy service file saved"
@@ -218,11 +219,23 @@ else
     fi
   else
 
-    echo "Triggering continuous updating for Proxy under service container"
-    # TODO:
+    echo "Starting continuous updating for Proxy under service container"
+
+    if ! test -e "$proxy_update_docker_script"; then
+
+      echo "ERROR: $proxy_update_docker_script does not exist"
+      exit 1
+    fi
+
+    if sh "$proxy_update_docker_script" "$home"; then
+
+      echo "Continuous updating for Proxy under service container started"
+    else
+
+      echo "ERROR: continuous updating for Proxy under service container was not started"
+    fi
   fi
 fi
-
 
 # TODO: Remove:
 echo "WORK IN PROGRESS"
