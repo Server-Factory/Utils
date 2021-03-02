@@ -51,11 +51,14 @@ msg2="Proxy init. parameters (1): (host=$host, port=$port, account=$account, pas
 msg3="Proxy init. parameters (2): (is_selfSigned_ca=$is_selfSigned_ca, working_directory=$working_directory)"
 # shellcheck disable=SC2154
 msg4="Proxy init. parameters (3): (certificate_endpoint=$certificate_endpoint, frequency=$frequency, log=$log)"
+# shellcheck disable=SC2154
+msg5="Proxy init. parameters (3): (is_factory_service=$FACTORY_SERVICE)"
 
 echo "$msg1"
 echo "$msg2"
 echo "$msg3"
 echo "$msg4"
+echo "$msg5"
 
 if test -e "$log"; then
 
@@ -74,19 +77,29 @@ if ! test -e "$proxy_update_execute"; then
   exit 1
 fi
 
-# shellcheck disable=SC2154,SC2129
-if sh "$proxy_update_execute" "$working_directory" "$host" "$port" \
-  "$account" "$password" "$is_selfSigned_ca" "$certificate_endpoint" "$log"; then
+validate_ip_script="$here/validate_ip_address.sh"
+if ! test -e "$validate_ip_script"; then
 
-  echo "Proxy has been initialized for the first time"
-else
-
-  echo "ERROR: Could not initialize proxy for the first time"
-  if test "$here"/Proxy/"$proxy_service_file_name"; then
-
-    rm -f "$here"/Proxy/"$proxy_service_file_name"
-  fi
+  echo "ERROR: $validate_ip_script does not exist"
   exit 1
+fi
+
+if [ -z "$FACTORY_SERVICE" ] || sh "$validate_ip_script" "$host" >/dev/null 2>&1; then
+
+  # shellcheck disable=SC2154,SC2129
+  if sh "$proxy_update_execute" "$working_directory" "$host" "$port" \
+    "$account" "$password" "$is_selfSigned_ca" "$certificate_endpoint" "$log"; then
+
+    echo "Proxy has been initialized for the first time"
+  else
+
+    echo "ERROR: Could not initialize proxy for the first time"
+    if test "$here"/Proxy/"$proxy_service_file_name"; then
+
+      rm -f "$here"/Proxy/"$proxy_service_file_name"
+    fi
+    exit 1
+  fi
 fi
 
 if test -e "$proxy_service"; then
@@ -119,93 +132,94 @@ if test -e systemd_service; then
   fi
 fi
 
-validate_ip_script="$here/validate_ip_address.sh"
-if ! test -e "$validate_ip_script"; then
-
-  echo "ERROR: $validate_ip_script does not exist"
-  exit 1
-fi
-
 if sh "$validate_ip_script" "$host" >/dev/null 2>&1; then
 
   echo "Proxy host is IP address: $host"
 else
 
-  if mv "$here"/Proxy/"$proxy_service_file_name" "$proxy_service" &&
-    test -e "$proxy_service" && chmod 640 "$proxy_service"; then
+  if [ -z "$FACTORY_SERVICE" ] ; then
 
-    echo "$proxy_service: proxy service file saved"
-    if ! test -e "$set_enforce_script"; then
+    if mv "$here"/Proxy/"$proxy_service_file_name" "$proxy_service" &&
 
-      echo "ERROR: $set_enforce_script does not exits"
-      exit 1
-    fi
+      test -e "$proxy_service" && chmod 640 "$proxy_service"; then
 
-    if cp "$proxy_service" "$systemd_service"; then
+      echo "$proxy_service: proxy service file saved"
+      if ! test -e "$set_enforce_script"; then
 
-      echo "$systemd_service is ready"
-    else
-
-      echo "ERROR: $proxy_service could not be created"
-      exit 1
-    fi
-
-    if "$set_enforce_script" >/dev/null 2>&1 &&
-      systemctl enable "$proxy_service_file_name" &&
-      systemctl start "$proxy_service_file_name"; then
-
-      if systemctl status "$proxy_service_file_name" | grep running >/dev/null 2>&1; then
-
-        echo "Proxy service started"
-      else
-
-        echo "ERROR: Proxy service is not running"
+        echo "ERROR: $set_enforce_script does not exits"
         exit 1
       fi
 
-      selinux_config_path="/etc/selinux"
-      selinux_config="$selinux_config_path/config"
-      selinux_config_backup="$selinux_config_path/config.bak"
+      if cp "$proxy_service" "$systemd_service"; then
 
-      if sestatus | grep -i "disabled" >/dev/null 2>&1; then
-
-        echo "SELinux is already disabled"
+        echo "$systemd_service is ready"
       else
 
-        if test -e "$selinux_config"; then
+        echo "ERROR: $proxy_service could not be created"
+        exit 1
+      fi
 
-          if ! test -e "$selinux_config_backup"; then
+      if "$set_enforce_script" >/dev/null 2>&1 &&
+        systemctl enable "$proxy_service_file_name" &&
+        systemctl start "$proxy_service_file_name"; then
 
-            echo "$selinux_config: backing up"
-            if ! mv "$selinux_config" "$selinux_config_backup"; then
+        if systemctl status "$proxy_service_file_name" | grep running >/dev/null 2>&1; then
 
-              echo "ERROR: $selinux_config could not backup"
-              exit 1
-            fi
-          fi
-
-          if echo "SELINUX=disabled" >"$selinux_config" &&
-            echo "SELINUXTYPE=targeted" | tee -a "$selinux_config" >/dev/null 2>&1; then
-
-            echo "SELinux is disabled"
-          else
-
-            echo "ERROR: Could not disable SELinux"
-          fi
+          echo "Proxy service started"
         else
 
-          echo "WARNING: $selinux_config not found"
+          echo "ERROR: Proxy service is not running"
+          exit 1
         fi
+
+        selinux_config_path="/etc/selinux"
+        selinux_config="$selinux_config_path/config"
+        selinux_config_backup="$selinux_config_path/config.bak"
+
+        if sestatus | grep -i "disabled" >/dev/null 2>&1; then
+
+          echo "SELinux is already disabled"
+        else
+
+          if test -e "$selinux_config"; then
+
+            if ! test -e "$selinux_config_backup"; then
+
+              echo "$selinux_config: backing up"
+              if ! mv "$selinux_config" "$selinux_config_backup"; then
+
+                echo "ERROR: $selinux_config could not backup"
+                exit 1
+              fi
+            fi
+
+            if echo "SELINUX=disabled" >"$selinux_config" &&
+              echo "SELINUXTYPE=targeted" | tee -a "$selinux_config" >/dev/null 2>&1; then
+
+              echo "SELinux is disabled"
+            else
+
+              echo "ERROR: Could not disable SELinux"
+            fi
+          else
+
+            echo "WARNING: $selinux_config not found"
+          fi
+        fi
+      else
+
+        echo "ERROR: Could not start proxy service"
+        exit 1
       fi
     else
 
-      echo "ERROR: Could not start proxy service"
+      echo "ERROR: $proxy_service proxy service file not saved"
       exit 1
     fi
   else
 
-    echo "ERROR: $proxy_service proxy service file not saved"
-    exit 1
+    echo "Triggering continuous updating for Proxy under service container"
+    # TODO:
   fi
 fi
 
