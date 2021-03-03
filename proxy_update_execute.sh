@@ -32,9 +32,12 @@ if ! test -e "$validate_ip_script"; then
 fi
 
 # shellcheck disable=SC2154
-if ! [ "$proxy_host_ip" = "" ]; then
+if [ -z "$proxy_host_ip" ]; then
 
-  echo "Last known proxy IP: $proxy_host_ip" >>"$log"
+  echo "No information about last known proxy IP address" >>"$log"
+else
+
+  echo "Last known proxy IP address: $proxy_host_ip" >>"$log"
 fi
 
 if sh "$validate_ip_script" "$host" >/dev/null 2>&1; then
@@ -46,8 +49,10 @@ else
   get_ip_script="$here"/getip.sh
   if test -e "$get_ip_script"; then
 
+    # FIXME: Duplicated code!
     if sh "$get_ip_script" "$host" >/dev/null 2>&1; then
 
+      # FIXME: Duplicated code!
       proxy_ip=$(sh "$get_ip_script" "$host")
       if [ "$proxy_ip" = "" ]; then
 
