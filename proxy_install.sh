@@ -11,11 +11,27 @@ proxy_update_execute_script_name="proxy_update_execute.sh"
 load_configuration_script_name="proxy_load_configuration.sh"
 
 config_file="$working_directory/$config_file_name"
+config_file_source="$here/Proxy/$config_file_name"
 set_enforce_script="$here/$set_enforce_script_name"
 proxy_service="$working_directory/$proxy_service_file_name"
 load_configuration_script="$here/$load_configuration_script_name"
 proxy_update_docker_script="$here/$proxy_update_docker_script_name"
 proxy_update_execute_script="$here/$proxy_update_execute_script_name"
+
+if test -e "$working_directory"; then
+
+  echo "Working directory is ready"
+else
+
+  if mkdir -p "$working_directory"; then
+
+    echo "$working_directory working directory has been created"
+  else
+
+    echo "ERROR: $working_directory working directory was not created"
+    exit 1
+  fi
+fi
 
 if test -e "$config_file"; then
 
@@ -26,7 +42,13 @@ if test -e "$config_file"; then
   fi
 fi
 
-if mv "$here"/Proxy/"$config_file_name" "$config_file" &&
+if ! test -e "$config_file_source"; then
+
+  echo "ERROR: $config_file_source does not exist"
+  exit 1
+fi
+
+if mv "$config_file_source" "$config_file" &&
   test -e "$config_file" && chmod 640 "$config_file"; then
 
   echo "$config_file: proxy configuration file saved"
@@ -236,8 +258,6 @@ else
     fi
   fi
 fi
-
-# TODO: Provide deployed proxy.cfg to every Docker container, update bash scripts to use it
 
 # TODO: Remove:
 echo "WORK IN PROGRESS"
