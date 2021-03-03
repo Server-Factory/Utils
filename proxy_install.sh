@@ -25,7 +25,7 @@ else
 
   if mkdir -p "$working_directory"; then
 
-    echo "$working_directory working directory has been created"
+    echo "$working_directory: working directory has been created"
   else
 
     echo "ERROR: $working_directory working directory was not created"
@@ -108,22 +108,19 @@ if ! test -e "$validate_ip_script"; then
   exit 1
 fi
 
-if [ -z "$FACTORY_SERVICE" ] || sh "$validate_ip_script" "$host" >/dev/null 2>&1; then
+# shellcheck disable=SC2154,SC2129
+if sh "$proxy_update_execute_script" "$working_directory" "$host" "$port" \
+  "$account" "$password" "$is_selfSigned_ca" "$certificate_endpoint" "$log"; then
 
-  # shellcheck disable=SC2154,SC2129
-  if sh "$proxy_update_execute_script" "$working_directory" "$host" "$port" \
-    "$account" "$password" "$is_selfSigned_ca" "$certificate_endpoint" "$log"; then
+  echo "Proxy has been initialized for the first time"
+else
 
-    echo "Proxy has been initialized for the first time"
-  else
+  echo "ERROR: Could not initialize proxy for the first time"
+  if test "$here"/Proxy/"$proxy_service_file_name"; then
 
-    echo "ERROR: Could not initialize proxy for the first time"
-    if test "$here"/Proxy/"$proxy_service_file_name"; then
-
-      rm -f "$here"/Proxy/"$proxy_service_file_name"
-    fi
-    exit 1
+    rm -f "$here"/Proxy/"$proxy_service_file_name"
   fi
+  exit 1
 fi
 
 if test -e "$proxy_service"; then
