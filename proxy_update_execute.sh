@@ -49,55 +49,39 @@ else
   get_ip_script="$here"/getip.sh
   if test -e "$get_ip_script"; then
 
-    # FIXME: Duplicated code!
-    if sh "$get_ip_script" "$host" >/dev/null 2>&1; then
+    proxy_ip=$(sh "$get_ip_script" "$host")
+    if [ "$proxy_ip" = "" ]; then
 
-      # FIXME: Duplicated code!
-      proxy_ip=$(sh "$get_ip_script" "$host")
-      if [ "$proxy_ip" = "" ]; then
+      echo "ERROR: Proxy IP was not obtained successfully, ip value: '$proxy_host_ip'" >>"$log"
+      if [ -z "$proxy_host_ip" ]; then
 
-        echo "ERROR: Proxy IP was not obtained successfully, ip value: '$proxy_host_ip'" >>"$log"
-        if [ "$proxy_host_ip" = "" ]; then
-
-          echo "ERROR: Could not obtain proxy IP address (1)" >>"$log"
-          exit 1
-        else
-
-          proxy_ip="$proxy_host_ip"
-          host="$proxy_ip"
-          echo "Proxy IP (1B): $host" >>"$log"
-        fi
+        echo "ERROR: Could not obtain proxy IP address (1)" >>"$log"
+        exit 1
       else
 
-        echo "Proxy IP (1): $proxy_ip" >>"$log"
-      fi
-
-      if sh "$validate_ip_script" "$proxy_ip" >/dev/null 2>&1; then
-
-        echo "Proxy IP (2): $proxy_ip" >>"$log"
+        proxy_ip="$proxy_host_ip"
         host="$proxy_ip"
-      else
-
-        if [ "$proxy_host_ip" = "" ]; then
-
-          echo "ERROR: Could not obtain proxy IP address (2)" >>"$log"
-          exit 1
-        else
-
-          host="$proxy_host_ip"
-          echo "Proxy IP (2B): $host" >>"$log"
-        fi
+        echo "Proxy IP (1B): $host" >>"$log"
       fi
     else
 
-      if [ "$proxy_host_ip" = "" ]; then
+      echo "Proxy IP (1): $proxy_ip" >>"$log"
+    fi
 
-        echo "ERROR: Could not obtain proxy IP address (3)" >>"$log"
+    if sh "$validate_ip_script" "$proxy_ip" >/dev/null 2>&1; then
+
+      echo "Proxy IP (2): $proxy_ip" >>"$log"
+      host="$proxy_ip"
+    else
+
+      if [ -z "$proxy_host_ip" ]; then
+
+        echo "ERROR: Could not obtain proxy IP address (2)" >>"$log"
         exit 1
       else
 
         host="$proxy_host_ip"
-        echo "Proxy IP (3B): $host" >>"$log"
+        echo "Proxy IP (2B): $host" >>"$log"
       fi
     fi
   else
