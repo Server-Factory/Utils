@@ -108,6 +108,15 @@ if ! test -e "$validate_ip_script"; then
   exit 1
 fi
 
+if [ -z "$FACTORY_SERVICE" ]; then
+
+  echo "Proxy update execution will be logged to: $log"
+else
+
+  echo "Proxy update execution will be logged to standard output"
+  log="/dev/stdout"
+fi
+
 # shellcheck disable=SC2154,SC2129
 if sh "$proxy_update_execute_script" "$working_directory" "$host" "$port" \
   "$account" "$password" "$is_selfSigned_ca" "$certificate_endpoint" "$log"; then
