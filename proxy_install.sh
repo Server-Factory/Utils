@@ -6,7 +6,7 @@ working_directory="$1"
 config_file_name="proxy.cfg"
 set_enforce_script_name="setenforce.sh"
 proxy_service_file_name="proxy.service"
-proxy_update_docker_script_name="proxy_update_docker.sh"
+proxy_update_docker_script_name="proxy_update.sh"
 proxy_update_execute_script_name="proxy_update_execute.sh"
 load_configuration_script_name="proxy_load_configuration.sh"
 
@@ -244,23 +244,6 @@ else
 
       echo "ERROR: $proxy_service proxy service file not saved"
       exit 1
-    fi
-  else
-
-    echo "Starting continuous updating for Proxy under service container"
-
-    if ! test -e "$proxy_update_docker_script"; then
-
-      echo "ERROR: $proxy_update_docker_script does not exist"
-      exit 1
-    fi
-
-    if sh "$proxy_update_docker_script" "$home"; then
-
-      echo "Continuous updating for Proxy under service container started"
-    else
-
-      echo "ERROR: continuous updating for Proxy under service container was not started"
     fi
   fi
 fi
