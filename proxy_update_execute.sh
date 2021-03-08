@@ -14,6 +14,7 @@ host_name="$host"
 here=$(dirname "$0")
 
 proxy_ip_txt="$working_directory/proxyIP.txt"
+proxy_ip_parent_txt="$working_directory/Parent/proxyIP.txt"
 
 msg1="Initializing Proxy, $date_time"
 msg2="Proxy init. parameters (1): (host=$host, port=$port, account=$account, password=$password)"
@@ -57,13 +58,13 @@ else
       proxy_ip=$(sh "$get_ip_script" "$host")
     else
 
-      if test -e "$proxy_ip_txt"; then
+      if test -e "$proxy_ip_parent_txt"; then
 
-        proxy_ip=$(cat "$proxy_ip_txt")
+        echo "$proxy_ip_parent_txt: is available" >>"$log"
+        proxy_ip=$(cat "$proxy_ip_parent_txt")
       else
 
-        echo "ERROR: $proxy_ip_txt does not exist"
-        exit 1
+        echo "WARNING: $proxy_ip_parent_txt does not exist" >>"$log"
       fi
     fi
 
@@ -161,12 +162,12 @@ fi
 cmdStartProxy="apply_proxy.sh"
 startProxyScript="$working_directory"/"$cmdStartProxy"
 
-if echo "$proxy_ip" > "$proxy_ip_txt"; then
+if echo "$proxy_ip" >"$proxy_ip_txt"; then
 
-  echo "$proxy_ip_txt: has been created"
+  echo "$proxy_ip_txt: has been created" >>"$log"
 else
 
-  echo "ERROR: $proxy_ip_txt has not been created"
+  echo "ERROR: $proxy_ip_txt has not been created" >>"$log"
   exit 1
 fi
 
