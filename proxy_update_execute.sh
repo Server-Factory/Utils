@@ -143,6 +143,17 @@ fi
 
 cmdStartProxy="apply_proxy.sh"
 startProxyScript="$working_directory"/"$cmdStartProxy"
+
+proxy_ip_txt="$working_directory/proxyIP.txt"
+if echo "$proxy_ip" > "$proxy_ip_txt"; then
+
+  echo "$proxy_ip_txt: has been created"
+else
+
+  echo "ERROR: $proxy_ip_txt has not been created"
+  exit 1
+fi
+
 if echo """
   #!/bin/sh
 
