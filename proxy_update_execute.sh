@@ -13,6 +13,8 @@ date_time=$(date)
 host_name="$host"
 here=$(dirname "$0")
 
+proxy_ip_txt="$working_directory/proxyIP.txt"
+
 msg1="Initializing Proxy, $date_time"
 msg2="Proxy init. parameters (1): (host=$host, port=$port, account=$account, password=$password)"
 msg3="Proxy init. parameters (2): (is_selfSigned_ca=$is_selfSigned_ca, working_directory=$working_directory)"
@@ -49,7 +51,22 @@ else
   get_ip_script="$here"/getip.sh
   if test -e "$get_ip_script"; then
 
-    proxy_ip=$(sh "$get_ip_script" "$host")
+    proxy_ip=""
+    if [ -z "$FACTORY_SERVICE" ]; then
+
+      proxy_ip=$(sh "$get_ip_script" "$host")
+    else
+
+      if test -e "$proxy_ip_txt"; then
+
+        proxy_ip=$(cat "$proxy_ip_txt")
+      else
+
+        echo "ERROR: $proxy_ip_txt does not exist"
+        exit 1
+      fi
+    fi
+
     if [ "$proxy_ip" = "" ]; then
 
       echo "ERROR: Proxy IP was not obtained successfully, ip value: '$proxy_host_ip'" >>"$log"
@@ -144,7 +161,6 @@ fi
 cmdStartProxy="apply_proxy.sh"
 startProxyScript="$working_directory"/"$cmdStartProxy"
 
-proxy_ip_txt="$working_directory/proxyIP.txt"
 if echo "$proxy_ip" > "$proxy_ip_txt"; then
 
   echo "$proxy_ip_txt: has been created"

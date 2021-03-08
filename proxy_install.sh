@@ -6,7 +6,6 @@ working_directory="$1"
 config_file_name="proxy.cfg"
 set_enforce_script_name="setenforce.sh"
 proxy_service_file_name="proxy.service"
-proxy_update_docker_script_name="proxy_update.sh"
 proxy_update_execute_script_name="proxy_update_execute.sh"
 load_configuration_script_name="proxy_load_configuration.sh"
 
@@ -15,7 +14,6 @@ config_file_source="$here/Proxy/$config_file_name"
 set_enforce_script="$here/$set_enforce_script_name"
 proxy_service="$working_directory/$proxy_service_file_name"
 load_configuration_script="$here/$load_configuration_script_name"
-proxy_update_docker_script="$here/$proxy_update_docker_script_name"
 proxy_update_execute_script="$here/$proxy_update_execute_script_name"
 
 if test -e "$working_directory"; then
