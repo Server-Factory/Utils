@@ -245,7 +245,3 @@ else
     fi
   fi
 fi
-
-# TODO: Remove:
-echo "WORK IN PROGRESS"
-exit 1
