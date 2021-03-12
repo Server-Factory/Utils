@@ -3,7 +3,7 @@
 proxy_host="$1"
 proxy_port="$2"
 proxy_account="$3"
-proxy_password="$3"
+proxy_password="$4"
 
 system_default_dir="/etc/system/default"
 docker_env_file="$system_default_dir/docker.proxy.env"
