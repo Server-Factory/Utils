@@ -4,6 +4,7 @@ proxy_host="$1"
 proxy_port="$2"
 proxy_account="$3"
 proxy_password="$4"
+docker_restart="$5"
 
 system_default_dir="/etc/system/default"
 docker_env_file="$system_default_dir/docker.proxy.env"
@@ -22,13 +23,19 @@ if [ -z "$proxy_host" ]; then
       exit 1
     fi
 
-    if systemctl daemon-reload && sudo systemctl restart docker; then
+    if [ -z "$docker_restart" ]; then
 
-      echo "Docker has been restarted with success (1)"
+      echo "Docker will not be restarted (1)"
     else
 
-      echo "ERROR: Docker failed to restart (1)"
-      exit 1
+      if systemctl daemon-reload && sudo systemctl restart docker; then
+
+        echo "Docker has been restarted with success (1)"
+      else
+
+        echo "ERROR: Docker failed to restart (1)"
+        exit 1
+      fi
     fi
   fi
 
@@ -94,11 +101,17 @@ else
   exit 1
 fi
 
-if systemctl daemon-reload && sudo systemctl restart docker; then
+if [ -z "$docker_restart" ]; then
 
-  echo "Docker has been restarted with success (2)"
+  echo "Docker will not be restarted (2)"
 else
 
-  echo "ERROR: Docker failed to restart (2)"
-  exit 1
+  if systemctl daemon-reload && sudo systemctl restart docker; then
+
+    echo "Docker has been restarted with success (2)"
+  else
+
+    echo "ERROR: Docker failed to restart (2)"
+    exit 1
+  fi
 fi

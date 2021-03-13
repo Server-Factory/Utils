@@ -230,3 +230,25 @@ else
 
   echo "'start proxy' script is already installed" >>"$log"
 fi
+
+if [ -z "$FACTORY_SERVICE" ]; then
+
+  docker_configuration_proxy_init_script_name="docker_configuration_proxy_init.sh"
+  docker_configuration_proxy_init_script="$here/$docker_configuration_proxy_init_script_name"
+
+  if test -e "$docker_configuration_proxy_init_script"; then
+
+    if sh "$docker_configuration_proxy_init_script" "$host" "$port" "$account" "$password"; then
+
+      echo "ERROR: Docker service Proxy configuration has been refreshed" >>"$log"
+    else
+
+      echo "ERROR: Could not refresh Docker service Proxy configuration" >>"$log"
+      exit 1
+    fi
+  else
+
+    echo "ERROR: $docker_configuration_proxy_init_script does not exist" >>"$log"
+    exit 1
+  fi
+fi
