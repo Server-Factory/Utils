@@ -240,7 +240,7 @@ if [ -z "$FACTORY_SERVICE" ]; then
 
     if sh "$docker_configuration_proxy_init_script" "$host" "$port" "$account" "$password"; then
 
-      echo "ERROR: Docker service Proxy configuration has been refreshed" >>"$log"
+      echo "Docker service Proxy configuration has been refreshed" >>"$log"
     else
 
       echo "ERROR: Could not refresh Docker service Proxy configuration" >>"$log"
