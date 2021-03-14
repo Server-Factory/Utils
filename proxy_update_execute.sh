@@ -130,8 +130,8 @@ if ! [ "$certificate_endpoint" = "" ]; then
     fi
   fi
 
-  # shellcheck disable=SC2039,SC1090
-  source "$install_certificate_script"
+  # shellcheck disable=SC1090
+  . "$install_certificate_script"
   install_certificate "$host" "$certificate_endpoint" >>"$log"
 fi
 
@@ -147,8 +147,8 @@ if [ "$is_selfSigned_ca" = "true" ]; then
       exit 1
     fi
 
-    # shellcheck disable=SC2039,SC1090
-    source "$enable_insecure_script"
+    # shellcheck disable=SC1090
+    . "$enable_insecure_script"
     enable_insecure >>"$log"
   else
 
@@ -217,7 +217,7 @@ if ! echo "$profile" | grep -i "$startProxyScript" >/dev/null 2>&1; then
   echo "Installing 'start proxy' script" >>"$log"
   if echo """
 
-  source $startProxyScript
+  . $startProxyScript
     """ >>"$etc_profile"; then
 
     echo "'start proxy' script has been installed" >>"$log"

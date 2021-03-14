@@ -19,8 +19,8 @@ while true; do
     exit 1
   fi
 
-  # shellcheck disable=SC1090,SC2039
-  source "$load_configuration_script"
+  # shellcheck disable=SC1090
+  . "$load_configuration_script"
   load_configuration "$config_file"
 
   # shellcheck disable=SC2154,SC2129
