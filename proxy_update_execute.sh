@@ -182,11 +182,11 @@ if echo """
   echo \"Setting up proxy\"
 
   export proxy_host_ip=\"$proxy_ip\"
-  export proxy_url=\"\$host:\$port/\"
+  export proxy_url=\"http://\$host:\$port/\"
 
   if ! [ \"\$account\" = \"\" ]; then
 
-    proxy_url=\"\$account:\$password@\$host:\$port/\"
+    export proxy_url=\"http://\$account:\$password@\$host:\$port/\"
   fi
 
   echo \"Proxy IP is set to: \$proxy_host_ip\"
