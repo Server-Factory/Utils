@@ -45,7 +45,7 @@ while true; do
     # shellcheck disable=SC2154,SC2129
     if sh "$proxy_update_execute" "$working_directory" "$host" \
       "$port" "$account" "$password" "$is_selfSigned_ca" \
-      "$certificate_endpoint" "$log"; then
+      "$certificate_endpoint" "$log" "$behavior_get_ip"; then
 
       echo "Proxy has been updated"
     else

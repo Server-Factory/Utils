@@ -8,6 +8,7 @@ password="$5"
 is_selfSigned_ca="$6"
 certificate_endpoint="$7"
 log="$8"
+behavior_get_ip="$9"
 
 date_time=$(date)
 host_name="$host"
@@ -19,7 +20,7 @@ proxy_ip_parent_txt="$working_directory/Parent/proxyIP.txt"
 msg1="Initializing Proxy, $date_time"
 msg2="Proxy init. parameters (1): (host=$host, port=$port, account=$account, password=$password)"
 msg3="Proxy init. parameters (2): (is_selfSigned_ca=$is_selfSigned_ca, working_directory=$working_directory)"
-msg4="Proxy init. parameters (3): (certificate_endpoint=$certificate_endpoint, log=$log)"
+msg4="Proxy init. parameters (3): (certificate_endpoint=$certificate_endpoint, log=$log, behavior_get_ip=$behavior_get_ip)"
 
 # shellcheck disable=SC2129
 echo "$msg1" >>"$log"

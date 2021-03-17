@@ -120,7 +120,7 @@ export proxy_host_ip="$hostIp"
 
 # shellcheck disable=SC2154,SC2129
 if sh "$proxy_update_execute_script" "$working_directory" "$host" "$port" \
-  "$account" "$password" "$is_selfSigned_ca" "$certificate_endpoint" "$log"; then
+  "$account" "$password" "$is_selfSigned_ca" "$certificate_endpoint" "$log" "$behavior_get_ip"; then
 
   echo "Proxy has been initialized for the first time"
 else
