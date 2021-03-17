@@ -75,7 +75,7 @@ msg3="Proxy init. parameters (2): (is_selfSigned_ca=$is_selfSigned_ca, working_d
 # shellcheck disable=SC2154
 msg4="Proxy init. parameters (3): (certificate_endpoint=$certificate_endpoint, frequency=$frequency, log=$log)"
 # shellcheck disable=SC2154
-msg5="Proxy init. parameters (4): (home=$home, is_factory_service=$FACTORY_SERVICE)"
+msg5="Proxy init. parameters (4): (home=$home, behavior_get_ip=$behavior_get_ip, is_factory_service=$FACTORY_SERVICE)"
 
 echo "$msg1"
 echo "$msg2"
