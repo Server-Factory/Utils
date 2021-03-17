@@ -42,6 +42,9 @@ while true; do
 
   if test -e "$proxy_update_execute"; then
 
+    # shellcheck disable=SC2154
+    export proxy_host_ip="$hostIp"
+
     # shellcheck disable=SC2154,SC2129
     if sh "$proxy_update_execute" "$working_directory" "$host" \
       "$port" "$account" "$password" "$is_selfSigned_ca" \
