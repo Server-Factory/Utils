@@ -71,9 +71,9 @@ msg1="Initializing Proxy for the first time"
 # shellcheck disable=SC2154
 msg2="Proxy init. parameters (1): (host=$host, hostIp=$hostIp, port=$port, account=$account, password=$password)"
 # shellcheck disable=SC2154
-msg3="Proxy init. parameters (2): (is_selfSigned_ca=$is_selfSigned_ca, working_directory=$working_directory)"
+msg3="Proxy init. parameters (2): (working_directory=$working_directory, log=$log)"
 # shellcheck disable=SC2154
-msg4="Proxy init. parameters (3): (certificate_endpoint=$certificate_endpoint, frequency=$frequency, log=$log)"
+msg4="Proxy init. parameters (3): (certificate_endpoint=$certificate_endpoint, frequency=$frequency)"
 # shellcheck disable=SC2154
 msg5="Proxy init. parameters (4): (home=$home, behavior_get_ip=$behavior_get_ip, is_factory_service=$FACTORY_SERVICE)"
 
@@ -120,7 +120,7 @@ export proxy_host_ip="$hostIp"
 
 # shellcheck disable=SC2154,SC2129
 if sh "$proxy_update_execute_script" "$working_directory" "$host" "$port" \
-  "$account" "$password" "$is_selfSigned_ca" "$certificate_endpoint" "$log" "$behavior_get_ip"; then
+  "$account" "$password" "$certificate_endpoint" "$log" "$behavior_get_ip"; then
 
   echo "Proxy has been initialized for the first time"
 else

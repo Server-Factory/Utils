@@ -5,10 +5,9 @@ host="$2"
 port="$3"
 account="$4"
 password="$5"
-is_selfSigned_ca="$6"
-certificate_endpoint="$7"
-log="$8"
-behavior_get_ip="$9"
+certificate_endpoint="$6"
+log="$7"
+behavior_get_ip="$8"
 
 date_time=$(date)
 host_name="$host"
@@ -19,9 +18,9 @@ proxy_ip_parent_txt="$working_directory/Parent/proxyIP.txt"
 
 msg1="Initializing Proxy, $date_time"
 msg2="Proxy init. parameters (1): (host=$host, port=$port, account=$account, password=$password)"
-msg3="Proxy init. parameters (2): (is_selfSigned_ca=$is_selfSigned_ca, working_directory=$working_directory)"
+msg3="Proxy init. parameters (2): (working_directory=$working_directory, log=$log)"
 msg4="Proxy init. parameters (3): (certificate_endpoint=$certificate_endpoint)"
-msg5="Proxy init. parameters (4): (log=$log, behavior_get_ip=$behavior_get_ip)"
+msg5="Proxy init. parameters (4): (behavior_get_ip=$behavior_get_ip)"
 
 # shellcheck disable=SC2129
 echo "$msg1" >>"$log"
@@ -147,28 +146,21 @@ if ! [ "$certificate_endpoint" = "" ]; then
   install_certificate "$host" "$certificate_endpoint" >>"$log"
 fi
 
-if [ "$is_selfSigned_ca" = "true" ]; then
+if [ -z "$certificate_endpoint" ]; then
 
-  echo "Proxy is using self-signed certificate" >>"$log"
-  if [ "$certificate_endpoint" = "" ]; then
+  enable_insecure_script="$here/enable_curl_wget_insecure.sh"
+  if ! test -e "$enable_insecure_script"; then
 
-    enable_insecure_script="$here/enable_curl_wget_insecure.sh"
-    if ! test -e "$enable_insecure_script"; then
-
-      echo "ERROR: $enable_insecure_script does not exist" >>"$log"
-      exit 1
-    fi
-
-    # shellcheck disable=SC1090
-    . "$enable_insecure_script"
-    enable_insecure >>"$log"
-  else
-
-    echo "'Insecure' certificate settings are not needed (1)" >>"$log"
+    echo "ERROR: $enable_insecure_script does not exist" >>"$log"
+    exit 1
   fi
+
+  # shellcheck disable=SC1090
+  . "$enable_insecure_script"
+  enable_insecure >>"$log"
 else
 
-  echo "'Insecure' certificate settings are not needed (2)" >>"$log"
+  echo "'Insecure' certificate settings are not needed (1)" >>"$log"
 fi
 
 cmdStartProxy="apply_proxy.sh"
