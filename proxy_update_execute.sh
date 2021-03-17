@@ -52,63 +52,72 @@ if sh "$validate_ip_script" "$host" >/dev/null 2>&1; then
   echo "Proxy host is IP address: $proxy_ip" >>"$log"
 else
 
-  get_ip_script="$here"/getip.sh
-  if test -e "$get_ip_script"; then
+  if [ -z "$behavior_get_ip" ]; then
 
-    proxy_ip=""
-    if [ -z "$FACTORY_SERVICE" ]; then
-
-      proxy_ip=$(sh "$get_ip_script" "$host")
-    else
-
-      if test -e "$proxy_ip_parent_txt"; then
-
-        echo "$proxy_ip_parent_txt: is available" >>"$log"
-        proxy_ip=$(cat "$proxy_ip_parent_txt")
-      else
-
-        echo "WARNING: $proxy_ip_parent_txt does not exist" >>"$log"
-      fi
-    fi
-
-    if [ "$proxy_ip" = "" ]; then
-
-      echo "ERROR: Proxy IP was not obtained successfully, ip value: '$proxy_host_ip'" >>"$log"
-      if [ -z "$proxy_host_ip" ]; then
-
-        echo "ERROR: Could not obtain proxy IP address (1)" >>"$log"
-        exit 1
-      else
-
-        proxy_ip="$proxy_host_ip"
-        host="$proxy_ip"
-        echo "Proxy IP (1B): $host" >>"$log"
-      fi
-    else
-
-      echo "Proxy IP (1): $proxy_ip" >>"$log"
-    fi
-
-    if sh "$validate_ip_script" "$proxy_ip" >/dev/null 2>&1; then
-
-      echo "Proxy IP (2): $proxy_ip" >>"$log"
-      host="$proxy_ip"
-    else
-
-      if [ -z "$proxy_host_ip" ]; then
-
-        echo "ERROR: Could not obtain proxy IP address (2)" >>"$log"
-        exit 1
-      else
-
-        host="$proxy_host_ip"
-        echo "Proxy IP (2B): $host" >>"$log"
-      fi
-    fi
+    echo "We will not obtain proxy IP address from host address"
   else
 
-    echo "ERROR: $get_ip_script is unavailable" >>"$log"
-    exit 1
+    if [ "$behavior_get_ip" = "true" ]; then
+
+      get_ip_script="$here"/getip.sh
+      if test -e "$get_ip_script"; then
+
+        proxy_ip=""
+        if [ -z "$FACTORY_SERVICE" ]; then
+
+          proxy_ip=$(sh "$get_ip_script" "$host")
+        else
+
+          if test -e "$proxy_ip_parent_txt"; then
+
+            echo "$proxy_ip_parent_txt: is available" >>"$log"
+            proxy_ip=$(cat "$proxy_ip_parent_txt")
+          else
+
+            echo "WARNING: $proxy_ip_parent_txt does not exist" >>"$log"
+          fi
+        fi
+
+        if [ "$proxy_ip" = "" ]; then
+
+          echo "ERROR: Proxy IP was not obtained successfully, ip value: '$proxy_host_ip'" >>"$log"
+          if [ -z "$proxy_host_ip" ]; then
+
+            echo "ERROR: Could not obtain proxy IP address (1)" >>"$log"
+            exit 1
+          else
+
+            proxy_ip="$proxy_host_ip"
+            host="$proxy_ip"
+            echo "Proxy IP (1B): $host" >>"$log"
+          fi
+        else
+
+          echo "Proxy IP (1): $proxy_ip" >>"$log"
+        fi
+
+        if sh "$validate_ip_script" "$proxy_ip" >/dev/null 2>&1; then
+
+          echo "Proxy IP (2): $proxy_ip" >>"$log"
+          host="$proxy_ip"
+        else
+
+          if [ -z "$proxy_host_ip" ]; then
+
+            echo "ERROR: Could not obtain proxy IP address (2)" >>"$log"
+            exit 1
+          else
+
+            host="$proxy_host_ip"
+            echo "Proxy IP (2B): $host" >>"$log"
+          fi
+        fi
+      else
+
+        echo "ERROR: $get_ip_script is unavailable" >>"$log"
+        exit 1
+      fi
+    fi
   fi
 fi
 
@@ -165,13 +174,31 @@ fi
 cmdStartProxy="apply_proxy.sh"
 startProxyScript="$working_directory"/"$cmdStartProxy"
 
-if echo "$proxy_ip" >"$proxy_ip_txt"; then
+if [ -z "$behavior_get_ip" ]; then
 
-  echo "$proxy_ip_txt: has been created" >>"$log"
+  echo "$proxy_ip_txt: will not be written"
+
+  if test -e "$proxy_ip_txt"; then
+
+    if ! rm -f "$proxy_ip_txt"; then
+
+      echo "ERROR: $proxy_ip_txt could not be removed"
+      exit 1
+    fi
+  fi
 else
 
-  echo "ERROR: $proxy_ip_txt has not been created" >>"$log"
-  exit 1
+  if [ "$behavior_get_ip" = "true" ]; then
+
+    if echo "$proxy_ip" >"$proxy_ip_txt"; then
+
+      echo "$proxy_ip_txt: has been created" >>"$log"
+    else
+
+      echo "ERROR: $proxy_ip_txt has not been created" >>"$log"
+      exit 1
+    fi
+  fi
 fi
 
 if echo """
