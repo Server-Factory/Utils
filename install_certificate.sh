@@ -80,12 +80,12 @@ install_certificate() {
   fi
 
   echo "Downloading certificate: $certificate_endpoint"
-  if wget --no-proxy -O "$certificate_file" "$certificate_endpoint" >/dev/null 2>&1; then
+  if wget --no-proxy -O "$certificate_file" "$certificate_endpoint"; then
 
-    echo "Proxy certificate saved to: $certificate_file"
+    echo "Proxy certificate downloaded to: $certificate_file"
   else
 
-    echo "ERROR: Could not save proxy certificate to: $certificate_file"
+    echo "ERROR: Could not download proxy certificate to: $certificate_file"
     exit 1
   fi
 

@@ -39,10 +39,10 @@ fi
 # shellcheck disable=SC2154
 if [ -z "$proxy_host_ip" ]; then
 
-  echo "No information about last known proxy IP address" >>"$log"
+  echo "No information about last known proxy address" >>"$log"
 else
 
-  echo "Last known proxy IP address: $proxy_host_ip" >>"$log"
+  echo "Last known proxy address: $proxy_host_ip" >>"$log"
 fi
 
 if sh "$validate_ip_script" "$host" >/dev/null 2>&1; then
@@ -129,7 +129,7 @@ if ! [ "$certificate_endpoint" = "" ]; then
     exit 1
   fi
 
-  if ! [ "$host_name" = "$proxy_ip" ]; then
+  if ! [ "$host_name" = "$proxy_ip" ] && ! [ "$proxy_ip" = "" ]; then
 
     if certificate_endpoint=$(echo "$certificate_endpoint" | sed "s/$host_name/$proxy_ip/1"); then
 
