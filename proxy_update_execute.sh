@@ -13,8 +13,9 @@ date_time=$(date)
 host_name="$host"
 here=$(dirname "$0")
 
-proxy_ip_txt="$working_directory/proxyIP.txt"
-proxy_ip_parent_txt="$working_directory/Parent/proxyIP.txt"
+text_file="proxyAddress.txt"
+proxy_address_txt="$working_directory/$text_file"
+proxy_address_parent_txt="$working_directory/Parent/$text_file"
 
 msg1="Initializing Proxy, $date_time"
 msg2="Proxy init. parameters (1): (host=$host, port=$port, account=$account, password=$password)"
@@ -37,83 +38,83 @@ if ! test -e "$validate_ip_script"; then
 fi
 
 # shellcheck disable=SC2154
-if [ -z "$proxy_host_ip" ]; then
+if [ -z "$PROXY_HOST_FALLBACK" ]; then
 
   echo "No information about last known proxy address" >>"$log"
 else
 
-  echo "Last known proxy address: $proxy_host_ip" >>"$log"
+  echo "Last known proxy address: $PROXY_HOST_FALLBACK" >>"$log"
 fi
 
 if sh "$validate_ip_script" "$host" >/dev/null 2>&1; then
 
-  proxy_ip="$host"
-  echo "Proxy host is IP address: $proxy_ip" >>"$log"
+  proxy_address="$host"
+  echo "Proxy host is address: $proxy_address" >>"$log"
 else
 
   if [ -z "$behavior_get_ip" ]; then
 
-    echo "We will not obtain proxy IP address from host address"
+    echo "We will not obtain proxy address from host address"
   else
 
     if [ "$behavior_get_ip" = "true" ]; then
 
-      get_ip_script="$here"/getip.sh
-      if test -e "$get_ip_script"; then
+      get_address_script="$here"/getip.sh
+      if test -e "$get_address_script"; then
 
-        proxy_ip=""
+        proxy_address=""
         if [ -z "$FACTORY_SERVICE" ]; then
 
-          proxy_ip=$(sh "$get_ip_script" "$host")
+          proxy_address=$(sh "$get_address_script" "$host")
         else
 
-          if test -e "$proxy_ip_parent_txt"; then
+          if test -e "$proxy_address_parent_txt"; then
 
-            echo "$proxy_ip_parent_txt: is available" >>"$log"
-            proxy_ip=$(cat "$proxy_ip_parent_txt")
+            echo "$proxy_address_parent_txt: is available" >>"$log"
+            proxy_address=$(cat "$proxy_address_parent_txt")
           else
 
-            echo "WARNING: $proxy_ip_parent_txt does not exist" >>"$log"
+            echo "WARNING: $proxy_address_parent_txt does not exist" >>"$log"
           fi
         fi
 
-        if [ "$proxy_ip" = "" ]; then
+        if [ "$proxy_address" = "" ]; then
 
-          echo "ERROR: Proxy IP was not obtained successfully, ip value: '$proxy_host_ip'" >>"$log"
-          if [ -z "$proxy_host_ip" ]; then
+          echo "ERROR: Proxy address was not obtained successfully, value: '$PROXY_HOST_FALLBACK'" >>"$log"
+          if [ -z "$PROXY_HOST_FALLBACK" ]; then
 
-            echo "ERROR: Could not obtain proxy IP address (1)" >>"$log"
+            echo "ERROR: Could not obtain proxy address (1)" >>"$log"
             exit 1
           else
 
-            proxy_ip="$proxy_host_ip"
-            host="$proxy_ip"
-            echo "Proxy IP (1B): $host" >>"$log"
+            proxy_address="$PROXY_HOST_FALLBACK"
+            host="$proxy_address"
+            echo "Proxy (1B): $host" >>"$log"
           fi
         else
 
-          echo "Proxy IP (1): $proxy_ip" >>"$log"
+          echo "Proxy (1): $proxy_address" >>"$log"
         fi
 
-        if sh "$validate_ip_script" "$proxy_ip" >/dev/null 2>&1; then
+        if sh "$validate_ip_script" "$proxy_address" >/dev/null 2>&1; then
 
-          echo "Proxy IP (2): $proxy_ip" >>"$log"
-          host="$proxy_ip"
+          echo "Proxy (2): $proxy_address" >>"$log"
+          host="$proxy_address"
         else
 
-          if [ -z "$proxy_host_ip" ]; then
+          if [ -z "$PROXY_HOST_FALLBACK" ]; then
 
-            echo "ERROR: Could not obtain proxy IP address (2)" >>"$log"
+            echo "ERROR: Could not obtain proxy address (2)" >>"$log"
             exit 1
           else
 
-            host="$proxy_host_ip"
-            echo "Proxy IP (2B): $host" >>"$log"
+            host="$PROXY_HOST_FALLBACK"
+            echo "Proxy (2B): $host" >>"$log"
           fi
         fi
       else
 
-        echo "ERROR: $get_ip_script is unavailable" >>"$log"
+        echo "ERROR: $get_address_script is unavailable" >>"$log"
         exit 1
       fi
     fi
@@ -129,14 +130,14 @@ if ! [ "$certificate_endpoint" = "" ]; then
     exit 1
   fi
 
-  if ! [ "$host_name" = "$proxy_ip" ] && ! [ "$proxy_ip" = "" ]; then
+  if ! [ "$host_name" = "$proxy_address" ] && ! [ "$proxy_address" = "" ]; then
 
-    if certificate_endpoint=$(echo "$certificate_endpoint" | sed "s/$host_name/$proxy_ip/1"); then
+    if certificate_endpoint=$(echo "$certificate_endpoint" | sed "s/$host_name/$proxy_address/1"); then
 
       echo "Proxy certificate endpoint has been updated to: $certificate_endpoint" >>"$log"
     else
 
-      echo "ERROR: could not update proxy certificate endpoint: '$host_name' -> '$proxy_ip'" >>"$log"
+      echo "ERROR: could not update proxy certificate endpoint: '$host_name' -> '$proxy_address'" >>"$log"
       exit 1
     fi
   fi
@@ -168,13 +169,13 @@ startProxyScript="$working_directory"/"$cmdStartProxy"
 
 if [ -z "$behavior_get_ip" ]; then
 
-  echo "$proxy_ip_txt: will not be written"
+  echo "$proxy_address_txt: will not be written"
 
-  if test -e "$proxy_ip_txt"; then
+  if test -e "$proxy_address_txt"; then
 
-    if ! rm -f "$proxy_ip_txt"; then
+    if ! rm -f "$proxy_address_txt"; then
 
-      echo "ERROR: $proxy_ip_txt could not be removed"
+      echo "ERROR: $proxy_address_txt could not be removed"
       exit 1
     fi
   fi
@@ -182,12 +183,12 @@ else
 
   if [ "$behavior_get_ip" = "true" ]; then
 
-    if echo "$proxy_ip" >"$proxy_ip_txt"; then
+    if echo "$proxy_address" >"$proxy_address_txt"; then
 
-      echo "$proxy_ip_txt: has been created" >>"$log"
+      echo "$proxy_address_txt: has been created" >>"$log"
     else
 
-      echo "ERROR: $proxy_ip_txt has not been created" >>"$log"
+      echo "ERROR: $proxy_address_txt has not been created" >>"$log"
       exit 1
     fi
   fi
@@ -203,7 +204,7 @@ if echo """
 
   echo \"Setting up proxy\"
 
-  export proxy_host_ip=\"$proxy_ip\"
+  export PROXY_HOST_FALLBACK=\"$proxy_address\"
   export proxy_url=\"http://\$host:\$port/\"
 
   if ! [ \"\$account\" = \"\" ]; then
@@ -211,7 +212,7 @@ if echo """
     export proxy_url=\"http://\$account:\$password@\$host:\$port/\"
   fi
 
-  echo \"Proxy IP is set to: \$proxy_host_ip\"
+  echo \"Proxy address is set to: \$PROXY_HOST_FALLBACK\"
   echo \"Proxy URL is set to: \$proxy_url\"
 
   export http_proxy=\"\$proxy_url\"

@@ -69,7 +69,7 @@ load_configuration "$config_file"
 
 msg1="Initializing Proxy for the first time"
 # shellcheck disable=SC2154
-msg2="Proxy init. parameters (1): (host=$host, hostIp=$hostIp, port=$port, account=$account, password=$password)"
+msg2="Proxy init. parameters (1): (host=$host, hostFallback=$hostFallback, port=$port, account=$account, password=$password)"
 # shellcheck disable=SC2154
 msg3="Proxy init. parameters (2): (working_directory=$working_directory, log=$log)"
 # shellcheck disable=SC2154
@@ -116,7 +116,7 @@ else
   log="/dev/stdout"
 fi
 
-export proxy_host_ip="$hostIp"
+export PROXY_HOST_FALLBACK="$hostFallback"
 
 # shellcheck disable=SC2154,SC2129
 if sh "$proxy_update_execute_script" "$working_directory" "$host" "$port" \
