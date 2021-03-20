@@ -9,10 +9,10 @@ if systemctl is-active --quiet avahi-daemon; then
 
     if [ "$stop_ip_tables" = "true" ]; then
 
-      if systemctl stop iptables && systemctl disable iptables; then
+      if systemctl stop iptables && systemctl disable iptables >/dev/null 2>&1; then
 
         echo "Iptables service is disabled for Avahi mDNS"
-        systemctl restart avahi-daemon.service
+        systemctl restart avahi-daemon.service >/dev/null 2>&1
       fi
     else
 
@@ -21,5 +21,24 @@ if systemctl is-active --quiet avahi-daemon; then
   else
 
     echo "Iptables service is stopped for Avahi mDNS"
+  fi
+
+  if systemctl is-active --quiet firewalld; then
+
+    if [ "$stop_ip_tables" = "true" ]; then
+
+      if firewall-cmd --add-service=mdns >/dev/null 2>&1 && \
+        firewall-cmd --permanent --add-service=mdns >/dev/null 2>&1; then
+
+        echo "Firewalld service is ready for Avahi mDNS"
+        systemctl restart avahi-daemon.service >/dev/null 2>&1;
+      fi
+    else
+
+      echo "Firewalld service will not be modified for Avahi mDNS"
+    fi
+  else
+
+    echo "Firewalld service is stopped for Avahi mDNS"
   fi
 fi
