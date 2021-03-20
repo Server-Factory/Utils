@@ -4,7 +4,7 @@ stop_ip_tables="$1"
 
 if systemctl is-active --quiet avahi-daemon; then
 
-  echo "Avahi Daemon is running, stop ip tables: '$stop_ip_tables'"
+  echo "Avahi Daemon is running, stop_ip_tables: '$stop_ip_tables'"
   if systemctl is-active --quiet iptables; then
 
     if [ "$stop_ip_tables" = "true" ]; then
