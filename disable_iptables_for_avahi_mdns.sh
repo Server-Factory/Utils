@@ -20,7 +20,7 @@ if systemctl is-active --quiet avahi-daemon; then
     fi
   else
 
-    echo "Iptables service is stopped for Avahi mDNS"
+    echo "Iptables service is not running for Avahi mDNS"
   fi
 
   if systemctl is-active --quiet firewalld; then
@@ -39,6 +39,6 @@ if systemctl is-active --quiet avahi-daemon; then
     fi
   else
 
-    echo "Firewalld service is stopped for Avahi mDNS"
+    echo "Firewalld service is not running for Avahi mDNS"
   fi
 fi
