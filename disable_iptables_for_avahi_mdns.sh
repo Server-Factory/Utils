@@ -9,5 +9,8 @@ if systemctl is-active --quiet avahi-daemon; then
 
       echo "Iptables service is disabled for Avahi mDNS"
     fi
+  else
+
+    echo "Iptables service is not running for Avahi mDNS"
   fi
 fi
