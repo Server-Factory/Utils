@@ -30,6 +30,16 @@ echo "$msg3" >>"$log"
 echo "$msg4" >>"$log"
 echo "$msg5" >>"$log"
 
+# shellcheck disable=SC2154
+if [ -z "$host" ]; then
+
+  if [ -z "$PROXY_HOST_FALLBACK" ]; then
+
+    echo "No Proxy configuration provided"
+    exit 0
+  fi
+fi
+
 validate_ip_script="$here/validate_ip_address.sh"
 if ! test -e "$validate_ip_script"; then
 
