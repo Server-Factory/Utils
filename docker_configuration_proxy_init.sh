@@ -6,6 +6,16 @@ proxy_account="$3"
 proxy_password="$4"
 docker_restart="$5"
 
+echo "Parameters (1): proxy_host=$proxy_host, proxy_port=$proxy_port"
+echo "Parameters (2): proxy_account=$proxy_account, proxy_password=$proxy_password"
+echo "Parameters (3): docker_restart=$docker_restart, parameters_passed=$#"
+
+if [ $# -lt 3 ]; then
+
+  echo "No Proxy configuration provided"
+  exit 0
+fi
+
 system_default_dir="/etc/system/default"
 docker_env_file="$system_default_dir/docker.proxy.env"
 docker_service_dir="/etc/systemd/system/docker.service.d"
