@@ -67,6 +67,16 @@ fi
 . "$load_configuration_script"
 load_configuration "$config_file"
 
+# shellcheck disable=SC2154
+if [ -z "$host" ]; then
+
+  if [ -z "$hostFallback" ]; then
+
+    echo "No Proxy configuration provided"
+    exit 0
+  fi
+fi
+
 msg1="Initializing Proxy for the first time"
 # shellcheck disable=SC2154
 msg2="Proxy init. parameters (1): (host=$host, hostFallback=$hostFallback, port=$port, account=$account, password=$password)"
