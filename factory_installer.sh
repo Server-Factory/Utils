@@ -65,7 +65,7 @@ if test Application/Release/Application.jar; then
 
       echo "Core utils have been installed with success"
       if cp -R Definitions "$definitions" &&
-        chmod -R 550 "$definitions"; then
+        chmod -R 750 "$definitions"; then
 
         echo "Software has been installed with success"
       else
