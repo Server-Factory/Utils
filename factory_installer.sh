@@ -67,6 +67,59 @@ if test Application/Release/Application.jar; then
       if cp -R Definitions "$definitions" &&
         chmod -R 750 "$definitions"; then
 
+        case $SHELL in
+        */zsh)
+
+          echo "ZSH detected"
+          profile_file="$(dirname ~)/$(basename ~)/.zshrc"
+          ;;
+        */bash)
+
+          echo "BASH detected"
+          profile_file="$(dirname ~)/$(basename ~)/.bashrc"
+          ;;
+        *)
+
+          echo "WARNING: no ZSH or BASH detected"
+          ;;
+        esac
+
+        if test -e "$profile_file"; then
+
+          echo "$profile_file is present"
+        else
+
+          if touch "$profile_file"; then
+
+            echo "$profile_file is created"
+          else
+
+            echo "ERROR: $profile_file was not created"
+            exit 1
+          fi
+        fi
+
+        export_path="export PATH=\${PATH}:$factoryPath"
+
+        profile_file_content=$(cat "$profile_file")
+        if echo "$profile_file_content" | grep "$export_path"; then
+
+          echo "Export path definition already exported: '$export_path"
+        else
+
+          echo "Adding export path definition: '$export_path'"
+          if echo "$export_path" >> "$profile_file"; then
+
+            echo "Export path definition added into $profile_file"
+            # shellcheck disable=SC1090
+            . "$profile_file"
+          else
+
+            echo "ERROR: export path definition was not added into $profile_file"
+            exit 1
+          fi
+        fi
+
         echo "Software has been installed with success"
       else
 
