@@ -16,6 +16,18 @@ then
   exit 1
 else
 
-  echo "Container is running: ${CONTAINER}"
-  exit 0
+  echo "${CONTAINER}: has started"
+
+  echo "${CONTAINER}: checking"
+  sleep 30
+
+  if docker ps -a --filter "status=running" --filter "name=${CONTAINER}" | grep "${CONTAINER}"; then
+
+    echo "${CONTAINER}: is running"
+    exit 0
+  else
+
+    echo "ERROR: ${CONTAINER} is not running"
+    exit 1
+  fi
 fi
