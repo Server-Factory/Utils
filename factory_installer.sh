@@ -9,7 +9,7 @@ if test -e build.gradle && test -e Factory; then
       echo "Gradle wrapper is available"
     else
 
-      gradle wrapper
+      gradle wrapper --gradle-version 6.7
     fi
 
     ./gradlew clean && ./gradlew install
