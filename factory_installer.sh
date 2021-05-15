@@ -99,7 +99,7 @@ if test Application/Release/Application.jar; then
           fi
         fi
 
-        export_path="export PATH=\${PATH}:$factoryPath"
+        export_path="export PATH=$factoryPath:\$PATH"
 
         profile_file_content=$(cat "$profile_file")
         if echo "$profile_file_content" | grep "$export_path"; then
@@ -108,7 +108,7 @@ if test Application/Release/Application.jar; then
         else
 
           echo "Adding export path definition: '$export_path'"
-          if echo "$export_path" >> "$profile_file"; then
+          if echo "" >> "$profile_file" && echo "$export_path" >> "$profile_file"; then
 
             echo "Export path definition added into $profile_file"
             # shellcheck disable=SC1090
