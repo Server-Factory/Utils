@@ -104,7 +104,7 @@ if test Application/Release/Application.jar; then
         profile_file_content=$(cat "$profile_file")
         if echo "$profile_file_content" | grep "$export_path"; then
 
-          echo "Export path definition already exported: '$export_path"
+          echo "Export path definition already exported: '$export_path'"
         else
 
           echo "Adding export path definition: '$export_path'"
