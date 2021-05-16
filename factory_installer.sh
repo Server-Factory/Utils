@@ -111,8 +111,6 @@ if test Application/Release/Application.jar; then
           if echo "" >> "$profile_file" && echo "$export_path" >> "$profile_file"; then
 
             echo "Export path definition added into $profile_file"
-            # shellcheck disable=SC1090
-            . "$profile_file"
           else
 
             echo "ERROR: export path definition was not added into $profile_file"
