@@ -4,3 +4,6 @@
 [submodule "Qemu"]
 	path = Qemu
 	url = https://github.com/Server-Factory/Qemu-Utils.git
+[submodule "Upstreamable"]
+	path = Upstreamable
+	url = git@github.com:red-elf/Upstreamable.git
