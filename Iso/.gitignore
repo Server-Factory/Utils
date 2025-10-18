@@ -1,6 +1,15 @@
 
+# Configuration files (keep in git)
 iso_sync.sh
 iso_location.settings
 iso_provider.settings
 
+# ISO files and archives (ignore - too large)
+*.iso
+*.img
+*.tar.gz
+*.tar.bz2
+*.tar.xz
+
+# Keep example files
 !Examples/*.*
