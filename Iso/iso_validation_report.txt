@@ -1,0 +1,47 @@
+ISO LINK VALIDATION REPORT
+Generated: Fri Oct 24 01:08:04 PM MSK 2025
+Configuration: /home/milosvasic/Projects/Mail-Server-Factory/Core/Utils/Iso/distributions.conf
+
+================================================================================
+VALIDATION RESULTS
+================================================================================
+
+UBUNTU 25.10 amd64 - ubuntu-25.10-live-server-amd64.iso
+  URL: https://releases.ubuntu.com/25.10/ubuntu-25.10-live-server-amd64.iso
+  Status: ✓ VALID (HTTP 200, Size: 2GB)
+
+UBUNTU 24.04.3 amd64 - ubuntu-24.04.3-live-server-amd64.iso
+  URL: https://releases.ubuntu.com/24.04/ubuntu-24.04.3-live-server-amd64.iso
+  Status: ✓ VALID (HTTP 200, Size: 3GB)
+
+UBUNTU 22.04.5 amd64 - ubuntu-22.04.5-live-server-amd64.iso
+  URL: https://releases.ubuntu.com/22.04/ubuntu-22.04.5-live-server-amd64.iso
+  Status: ✓ VALID (HTTP 200, Size: 1GB)
+
+CENTOS stream amd64 - CentOS-Stream-x86_64-latest-boot.iso
+  URL: https://mirror.stream.centos.org/9-stream/BaseOS/x86_64/iso/CentOS-Stream-9-latest-x86_64-boot.iso
+  Status: ✓ VALID (HTTP 200, Size: 1GB)
+
+CENTOS 8 amd64 - CentOS-8.5.2111-x86_64-boot.iso
+  URL: https://vault.centos.org/8.5.2111/isos/x86_64/CentOS-8.5.2111-x86_64-boot.iso
+  Status: ✓ VALID (HTTP 200, Size: 789MB)
+
+CENTOS 7 amd64 - CentOS-7-x86_64-Minimal-2009.iso
+  URL: https://vault.centos.org/7.9.2009/isos/x86_64/CentOS-7-x86_64-Minimal-2009.iso
+  Status: ✓ VALID (HTTP 200, Size: 973MB)
+
+ALTLINUX p10-server x86_64 - alt-server-10.4-x86_64.iso
+  URL: https://ftp.altlinux.org/pub/distributions/ALTLinux/p10/images/server/x86_64/alt-server-10.4-x86_64.iso
+  Status: ✓ VALID (HTTP 200, Size: 5GB)
+
+ALTLINUX p10 x86_64 - alt-server-10.2-x86_64.iso
+  URL: https://ftp.altlinux.org/pub/distributions/ALTLinux/p10/images/server/x86_64/alt-server-10.2-x86_64.iso
+  Status: ✓ VALID (HTTP 200, Size: 4GB)
+
+ASTRA ce2.12 amd64 - alce-current.iso
+  URL: https://dl.astralinux.ru/astra/stable/2.12_x86-64/iso/alce-current.iso
+  Status: ✓ VALID (HTTP 200, Size: 5GB)
+
+ROSA 12.4 x86_64 - rosa.fresh.12.x86_64.iso
+  URL: https://mirror.rosalinux.ru/rosa/rosa2021.1/iso/ROSA.FRESH.12/rosa.fresh.12.x86_64.iso
+  Status: ✗ INVALID (Timeout)
